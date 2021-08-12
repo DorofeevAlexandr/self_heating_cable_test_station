@@ -27,7 +27,13 @@ class CsvFileReader:
         result = '/sd0/' + str(self.year) + '/' + str(self.month) + '/'
         return result
 
-    def copy_file(self, file_name):
+    def get_path(self):
+        result = self.ftp.pwd()
+        print(result)
+        return result
+
+    def copy_file(self,path, file_name):
+        self.ftp.cwd(path)
         my_file = open(file_name, 'wb')
         self.ftp.retrbinary('RETR ' + file_name, my_file.write, 1024)
         my_file.close()
@@ -55,9 +61,8 @@ class CsvFileReader:
             for row in reader:
                 print(row)
 
-with CsvFileReader(2021, 3, 26) as csv_reader:
-    csv_reader.get_dir_list(csv_reader.path_dir_in_plc())
-    csv_reader.copy_file('Lines_data_2021_3_26.csv')
-    csv_reader.open_file('Lines_data_2021_3_26.csv')
-
-    # csv_reader.get_dir_list('/sd0/2021/3/')
+if __name__ == '__main__':
+    with CsvFileReader(2021, 3, 26) as csv_reader:
+        csv_reader.get_dir_list(csv_reader.path_dir_in_plc())
+        csv_reader.copy_file('Lines_data_2021_3_26.csv')
+        csv_reader.open_file('Lines_data_2021_3_26.csv')
