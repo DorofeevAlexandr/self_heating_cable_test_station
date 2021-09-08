@@ -1,59 +1,61 @@
-from tkinter import *
+import tkinter as tk
 from reading_csv_file_ftp import CsvFileReader
 
 
-def open_folder(path='/sd0/'):
-    for i in range(1, box.size()):
-        box.delete(1)
-    with CsvFileReader() as csv_reader:
-        folders = csv_reader.get_dir_list(path)
-        for folder in folders:
-            box.insert(END, folder)
-        label['text'] = csv_reader.get_path()
+class FrameOpenFile(tk.LabelFrame):
+    def __init__(self, parent=None):
+        tk.LabelFrame.__init__(self, parent)
+        self.pack()
 
+        self.label = tk.Label(self, text='/sd0/')
+        self.label.pack(side=tk.TOP, fill=tk.Y, anchor=tk.NW)
 
-def open_sub_folder(event):
-    select = list(box.curselection())[0]
-    if select == 0 and label['text'].rfind('/') != -1:
-        path = label['text'][0:label['text'].rfind('/')] + '/'
-        if path == '/':
-            path = '/sd0/'
-        file_name = ''
-    else:
-        path = label['text'] + '/'
-        file_name = box.get(select)
+        # f_open_dialog = tk.LabelFrame()
+        # f_open_dialog.pack(side=tk.LEFT, anchor=tk.NW, fill=tk.BOTH)
 
-    with CsvFileReader() as csv_reader:
-        if file_name.find('.') == -1:
-            for i in range(1, box.size()):
-                box.delete(1)
-            folders = csv_reader.get_dir_list(path + file_name)
+        self.box = tk.Listbox(self, selectmode=tk.SINGLE, width=50, height=30)
+        self.box.pack(side=tk.LEFT, fill=tk.Y)
+        self.box.insert(tk.END, '[**]')
+        self.box.bind('<Double-Button-1>', self.open_sub_folder)
+        self.scroll = tk.Scrollbar(self, command=self.box.yview)
+        self.scroll.pack(side=tk.LEFT, fill=tk.Y)
+        self.box.config(yscrollcommand=self.scroll.set)
+        # self.open_folder()
+
+    def open_folder(self, path='/sd0/'):
+        for i in range(1, self.box.size()):
+            self.box.delete(1)
+        with CsvFileReader() as csv_reader:
+            folders = csv_reader.get_dir_list(path)
             for folder in folders:
-                box.insert(END, folder)
-            label['text'] = csv_reader.get_path()
+                self.box.insert(tk.END, folder)
+            self.label['text'] = csv_reader.get_path()
+
+    def open_sub_folder(self, event):
+        select = list(self.box.curselection())[0]
+        if select == 0 and self.label['text'].rfind('/') != -1:
+            path = self.label['text'][0:self.label['text'].rfind('/')] + '/'
+            if path == '/':
+                path = '/sd0/'
+            file_name = ''
         else:
-            csv_reader.copy_file(path, file_name)
-            csv_reader.open_file(file_name)
+            path = self.label['text'] + '/'
+            file_name = self.box.get(select)
+
+        with CsvFileReader() as csv_reader:
+            if file_name.find('.') == -1:
+                for i in range(1, self.box.size()):
+                    self.box.delete(1)
+                folders = csv_reader.get_dir_list(path + file_name)
+                for folder in folders:
+                    self.box.insert(tk.END, folder)
+                self.label['text'] = csv_reader.get_path()
+            else:
+                csv_reader.copy_file(path, file_name)
+                csv_reader.open_file(file_name)
 
 
-window = Tk()
-window.title("Выбор архива")
-
-
-label = Label(text='/sd0/')
-label.pack(side=TOP, fill=Y, anchor=NW)
-
-f_open_dialog = Frame()
-f_open_dialog.pack(side=LEFT, anchor=NW, fill=BOTH)
-
-box = Listbox(f_open_dialog, selectmode=SINGLE, width=100, height=30)
-box.pack(side=LEFT, fill=BOTH)
-box.insert(END, '[**]')
-box.bind('<Double-Button-1>', open_sub_folder)
-scroll = Scrollbar(f_open_dialog, command=box.yview)
-scroll.pack(side=LEFT, fill=Y)
-box.config(yscrollcommand=scroll.set)
-
-open_folder()
-
-window.mainloop()
+if __name__ == '__main__':
+    window = tk.Tk()
+    window.title("Выбор архива")
+    FrameOpenFile().mainloop()

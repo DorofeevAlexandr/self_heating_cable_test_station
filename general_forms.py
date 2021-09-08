@@ -1,72 +1,58 @@
 import tkinter as tk
+import window_open_dialog
 # import control_plc as cplc
 
 
 WIDTH_1 = 15
-WIDTH_2 = 40
+WIDTH_2 = 25
 # Создается новое окно с заголовком.
 window = tk.Tk()
 window.title("Испытание самогреющегося кабеля")
 
+frm_params = tk.Frame(relief=tk.SUNKEN, borderwidth=3)
+frm_params.pack(side=tk.TOP, anchor=tk.N, fill=tk.X)
 
-# Создает новую рамку `frm_buttons` для размещения в ней
-# кнопок "Отправить" и "Очистить". Данная рамка заполняет
-# все окно в горизонтальном направлении с
-# отступами в 5 пикселей горизонтально и вертикально.
-frm_buttons = tk.Frame()
-frm_buttons.pack(side=tk.BOTTOM, fill=tk.X, ipadx=5, ipady=5)
+frm_current_params = tk.Frame(frm_params, relief=tk.SUNKEN, borderwidth=3)
+frm_current_params.pack(side=tk.TOP, anchor=tk.N, fill=tk.X)
 
-# Создает кнопку "Отправить" и размещает ее
-# справа от рамки `frm_buttons`.
-btn_submit = tk.Button(master=frm_buttons, text="Submit")
-btn_submit.pack(padx=10, ipadx=10)
+frm_current_params_unit_1 = tk.LabelFrame(frm_params, text='Образец № 1', relief=tk.SUNKEN, borderwidth=3)
+frm_current_params_unit_1.pack(side=tk.LEFT, anchor=tk.N)
 
-# Создает кнопку "Очистить" и размещает ее
-# справа от рамки `frm_buttons`.
-btn_clear = tk.Button(master=frm_buttons, text="Clear")
-btn_clear.pack(ipadx=10)
+frm_current_params_unit_2 = tk.LabelFrame(frm_params, text='Образец № 2', relief=tk.SUNKEN, borderwidth=3)
+frm_current_params_unit_2.pack(side=tk.LEFT, anchor=tk.N)
 
+frm_current_params_unit_3 = tk.LabelFrame(frm_params, text='Образец № 3', relief=tk.SUNKEN, borderwidth=3)
+frm_current_params_unit_3.pack(side=tk.LEFT, anchor=tk.N)
 
+fr = window_open_dialog.FrameOpenFile()
+fr.pack(side=tk.LEFT, anchor=tk.NW, fill=tk.BOTH)
 
-# Создается новая рамка отображения текущих параметров.
-frm_current_params = tk.Frame(relief=tk.SUNKEN, borderwidth=3)
-# Помещает рамку на окно приложения.
-frm_current_params.pack()
 
 label_family_tester_1 = tk.Label(master=frm_current_params, text='Фамилия испытателя')
-entry_family_tester_1 = tk.Entry(master=frm_current_params, width=50)
+entry_family_tester_1 = tk.Entry(master=frm_current_params, width=WIDTH_2)
 label_family_tester_1.grid(row=1, column=0, sticky="e")
 entry_family_tester_1.grid(row=1, column=1)
 
 label_time_read_frompc = tk.Label(master=frm_current_params, text='Время в ПЛК')
-entry_time_read_frompc = tk.Entry(master=frm_current_params, width=10, state='disabled')
+entry_time_read_frompc = tk.Entry(master=frm_current_params, width=WIDTH_1, state='disabled')
 label_time_read_frompc.grid(row=1, column=3, sticky="e")
 entry_time_read_frompc.grid(row=1, column=4)
 
 label_voltage_testing = tk.Label(master=frm_current_params, text='Напряжение тестирования')
-entry_voltage_testing = tk.Entry(master=frm_current_params, width=10, state='disabled')
+entry_voltage_testing = tk.Entry(master=frm_current_params, width=WIDTH_1, state='disabled')
 label_voltage_testing.grid(row=3, column=0, sticky="e")
 entry_voltage_testing.grid(row=3, column=1)
 
 label_temp_test_unit_1 = tk.Label(master=frm_current_params, text='Температура испытательной установки 1')
-entry_temp_test_unit_1 = tk.Entry(master=frm_current_params, width=10, state='disabled')
+entry_temp_test_unit_1 = tk.Entry(master=frm_current_params, width=WIDTH_1, state='disabled')
 label_temp_test_unit_1.grid(row=4, column=0, sticky="e")
 entry_temp_test_unit_1.grid(row=4, column=1)
 
 label_temp_test_unit_2 = tk.Label(master=frm_current_params, text='Температура испытательной установки 2')
-entry_temp_test_unit_2 = tk.Entry(master=frm_current_params, width=10, state='disabled')
+entry_temp_test_unit_2 = tk.Entry(master=frm_current_params, width=WIDTH_1, state='disabled')
 label_temp_test_unit_2.grid(row=4, column=3, sticky="e")
 entry_temp_test_unit_2.grid(row=4, column=4)
 
-
-frm_current_params_unit_1 = tk.LabelFrame(text='Образец № 1', relief=tk.SUNKEN, borderwidth=3)
-frm_current_params_unit_1.pack(side=tk.LEFT)
-
-frm_current_params_unit_2 = tk.LabelFrame(text='Образец № 2', relief=tk.SUNKEN, borderwidth=3)
-frm_current_params_unit_2.pack(side=tk.LEFT)
-
-frm_current_params_unit_3 = tk.LabelFrame(text='Образец № 3', relief=tk.SUNKEN, borderwidth=3)
-frm_current_params_unit_3.pack(side=tk.LEFT)
 
 # ==========================================================================================================
 label_kable_brand_test_1 = tk.Label(master=frm_current_params_unit_1, text='Марка кабеля испытания 1')

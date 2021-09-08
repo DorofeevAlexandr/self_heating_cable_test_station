@@ -61,8 +61,6 @@ class CsvFileReader:
             for row in reader:
                 print(row)
 
+
 if __name__ == '__main__':
-    with CsvFileReader(2021, 3, 26) as csv_reader:
-        csv_reader.get_dir_list(csv_reader.path_dir_in_plc())
-        csv_reader.copy_file('Lines_data_2021_3_26.csv')
-        csv_reader.open_file('Lines_data_2021_3_26.csv')
+    pass
