@@ -8,6 +8,7 @@ SERVER_PORT = 502
 
 # set global
 regs = {key: 0 for key in range(100, 600)}
+parameters = hmi_parameters.Parameters()
 
 # init a thread lock
 regs_lock = Lock()
@@ -42,26 +43,32 @@ def polling_thread():
                     regs[400 + i] = reg_list_4[i]
                 for i in range(0, 100):
                     regs[500 + i] = reg_list_5[i]
+
+                if parameters.stack_of_writable_values:
+                    regs_addr, regs_values = parameters.stack_of_writable_values.pop()
+                    print('write->', regs_addr, regs_values)
+                    c.write_multiple_registers(regs_addr, regs_values)
         # 1s before next polling
         time.sleep(1)
 
 
-parameters = hmi_parameters.Parameters()
+
 # start polling thread
 tp = Thread(target=polling_thread)
 # set daemon: polling thread will exit if main thread exit
 tp.daemon = True
 tp.start()
 
-# display loop (in main thread)
-iteration = 0
-while True:
-    print('=====================================================================')
-    # print regs list (with thread lock synchronization)
-    iteration += 1
-    print(iteration)
+
+def update_parameters():
+    # print('=====================================================================')
     with regs_lock:
-        print(regs)
-        parameters.update_value(regs)
-    # 1s before next print
-    time.sleep(1)
+        # print(regs)
+        parameters.read_values(regs)
+        parameters.write_values()
+
+
+if __name__ == '__main__':
+    while True:
+        update_parameters()
+        time.sleep(1)
