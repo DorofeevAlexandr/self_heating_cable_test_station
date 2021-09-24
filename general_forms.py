@@ -24,7 +24,11 @@ class FrameCurrentParams(tk.LabelFrame):
         self.label_time_read_frompc = tk.Label(self, text='Время в ПЛК')
         self.entry_time_read_frompc = tk.Entry(self, width=WIDTH_1, state='disabled', textvariable=self.time_read_frompc)
         self.label_time_read_frompc.grid(row=1, column=3, sticky="e")
-        self.entry_time_read_frompc.grid(row=1, column=4)
+        self.entry_time_read_frompc.grid(row=2, column=4)
+
+        self.date_read_frompc = tk.StringVar()
+        self.entry_date_read_frompc = tk.Entry(self, width=WIDTH_1, state='disabled', textvariable=self.date_read_frompc)
+        self.entry_date_read_frompc.grid(row=1, column=4)
 
         self.voltage_testing = tk.StringVar()
         self.label_voltage_testing = tk.Label(self, text='Напряжение тестирования')
@@ -46,7 +50,8 @@ class FrameCurrentParams(tk.LabelFrame):
 
     def update_values_of_entry(self):
         self.family_tester_1.set(str(c_plc.parameters.p['s_FamilyTester_1'].value))
-        self.time_read_frompc.set(str(c_plc.parameters.p['s_TimeReadFromPC'].value))
+        self.time_read_frompc.set(str(c_plc.parameters.p['s_TimeReadFromPC'].value)[8:16])
+        self.date_read_frompc.set(str(c_plc.parameters.p['s_TimeReadFromPC'].value)[0:8])
         self.voltage_testing.set(str(c_plc.parameters.p['r_VoltageTesting'].value))
         self.temp_test_unit_1.set(str(c_plc.parameters.p['r_TempTestUnit_1'].value))
         self.temp_test_unit_2.set(str(c_plc.parameters.p['r_TempTestUnit_2'].value))
@@ -353,7 +358,7 @@ skipp_update = 0
 def set_skipp_update():
     global skipp_update
     skipp_update = 5
-    
+
 
 def update():
     c_plc.update_parameters()
