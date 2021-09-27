@@ -44,10 +44,11 @@ def polling_thread():
                 for i in range(0, 100):
                     regs[500 + i] = reg_list_5[i]
 
-                if parameters.stack_of_writable_values:
+                while parameters.stack_of_writable_values:
                     regs_addr, regs_values = parameters.stack_of_writable_values.pop()
                     print('write->', regs_addr, regs_values)
                     c.write_multiple_registers(regs_addr, regs_values)
+
         # 1s before next polling
         time.sleep(1)
 

@@ -1,9 +1,116 @@
 import tkinter as tk
+import tkinter.messagebox as mb
 import window_open_dialog
 import control_plc as c_plc
 
 WIDTH_1 = 15
 WIDTH_2 = 25
+
+
+def set_kth_bit(n, k):
+    return (1 << k) | n
+
+
+class MainMenu(tk.Frame):
+    def __init__(self, parent=None):
+        tk.Frame.__init__(self, parent)
+
+        menubar = tk.Menu(self.master)
+        self.master.config(menu=menubar)
+        file_menu = tk.Menu(menubar, tearoff=0)
+        # self.file_menu.add_command(label="Открыть...")
+        # self.file_menu.add_command(label="Новый")
+        file_menu.add_command(label="Настроить время в ПЛК", command=self.open_window_tuning_time_in_plc)
+        file_menu.add_separator()
+        file_menu.add_command(label="Выход", command=self.exit_program)
+        menubar.add_cascade(label="Файл", menu=file_menu)
+
+    @staticmethod
+    def open_window_tuning_time_in_plc():
+        WindowTuningTimeInPLC(window)
+        WindowTuningTimeInPLC.grab_set(window)
+
+    @staticmethod
+    def exit_program():
+        exit()
+
+
+class WindowTuningTimeInPLC(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.geometry('500x150')
+        self.time_read_frompc = tk.StringVar()
+        self.label_time_read_frompc = tk.Label(self, text='Время в ПЛК')
+        self.entry_time_read_frompc = tk.Entry(self, width=WIDTH_1, state='disabled', textvariable=self.time_read_frompc)
+        self.label_time_read_frompc.grid(row=1, column=1, sticky="e")
+        self.entry_time_read_frompc.grid(row=2, column=2)
+
+        self.date_read_frompc = tk.StringVar()
+        self.entry_date_read_frompc = tk.Entry(self, width=WIDTH_1, state='disabled', textvariable=self.date_read_frompc)
+        self.entry_date_read_frompc.grid(row=2, column=1)
+
+        width_time = 5
+        self.year = tk.StringVar()
+        self.entry_year = tk.Entry(self, width=width_time, textvariable=self.year)
+        self.entry_year.grid(row=3, column=1)
+
+        self.month = tk.StringVar()
+        self.entry_month = tk.Entry(self, width=width_time, textvariable=self.month)
+        self.entry_month.grid(row=3, column=2)
+
+        self.day = tk.StringVar()
+        self.entry_day = tk.Entry(self, width=width_time, textvariable=self.day)
+        self.entry_day.grid(row=3, column=3)
+
+        self.hour = tk.StringVar()
+        self.entry_hour = tk.Entry(self, width=width_time, textvariable=self.hour)
+        self.entry_hour.grid(row=3, column=4)
+
+        self.minute = tk.StringVar()
+        self.entry_minute = tk.Entry(self, width=width_time, textvariable=self.minute)
+        self.entry_minute.grid(row=3, column=5)
+
+        self.second = tk.StringVar()
+        self.entry_second = tk.Entry(self, width=width_time, textvariable=self.second)
+        self.entry_second.grid(row=3, column=6)
+
+
+        self.update_values_of_entry()
+        self.button_read_time = tk.Button(self, text="Обновить время", command=self.update_values_of_entry)
+        self.button_write_time = tk.Button(self, text="Записать время", command=self.write_time)
+        self.button_close = tk.Button(self, text="Закрыть", command=self.confirm_delete)
+        self.button_read_time.grid(row=5, column=1)
+        self.button_write_time.grid(row=5, column=3)
+        self.button_close.grid(row=5, column=5)
+
+    def update_values_of_entry(self):
+        s_time = str(c_plc.parameters.p['s_TimeReadFromPC'].value)
+        self.time_read_frompc.set(s_time[8:16])
+        self.date_read_frompc.set('20' + s_time[0:8])
+        self.year.set('20' + s_time[0:2])
+        self.month.set(s_time[3:5])
+        self.day.set(s_time[6:8])
+        self.hour.set(s_time[8:10])
+        self.minute.set(s_time[11:13])
+        self.second.set(s_time[14:16])
+
+    def write_time(self):
+        write_value(self.entry_year, 'w_TimeWriteToPC_year')
+        write_value(self.entry_month, 'w_TimeWriteToPC_month')
+        write_value(self.entry_day, 'w_TimeWriteToPC_day')
+        write_value(self.entry_hour, 'w_TimeWriteToPC_hour')
+        write_value(self.entry_minute, 'w_TimeWriteToPC_min')
+        write_value(self.entry_second, 'w_TimeWriteToPC_sec')
+
+        w_reg_control_1 = c_plc.parameters.p['w_RegControl_1'].value
+        c_plc.parameters.p['w_RegControl_1'].write_value = set_kth_bit(w_reg_control_1, 1)
+        c_plc.parameters.p['w_RegControl_1'].en_write = True
+
+
+    def confirm_delete(self):
+        message = "Вы уверены, что хотите закрыть это окно?"
+        if mb.askyesno(message=message, parent=self):
+            self.destroy()
 
 
 class FrameCurrentParams(tk.LabelFrame):
@@ -318,6 +425,8 @@ class FrameCurrentParamsUnit3(tk.LabelFrame):
 # Создается новое окно с заголовком.
 window = tk.Tk()
 window.title("Испытание самогреющегося кабеля")
+
+main_menu = MainMenu(window)
 
 frm_params = tk.Frame(relief=tk.SUNKEN, borderwidth=3)
 frm_params.pack(side=tk.TOP, anchor=tk.N, fill=tk.X)
