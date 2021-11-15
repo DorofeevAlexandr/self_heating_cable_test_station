@@ -1,17 +1,15 @@
 import tkinter as tk
 from reading_csv_file_ftp import CsvFileReader
+import charts
 
 
 class FrameOpenFile(tk.LabelFrame):
     def __init__(self, parent=None):
         tk.LabelFrame.__init__(self, parent)
-        self.pack()
+        self.pack(fill=tk.BOTH)
 
         self.label = tk.Label(self, text='/sd0/')
         self.label.pack(side=tk.TOP, fill=tk.Y, anchor=tk.NW)
-
-        # f_open_dialog = tk.LabelFrame()
-        # f_open_dialog.pack(side=tk.LEFT, anchor=tk.NW, fill=tk.BOTH)
 
         self.box = tk.Listbox(self, selectmode=tk.SINGLE, width=50, height=30)
         self.box.pack(side=tk.LEFT, fill=tk.Y)
@@ -21,6 +19,11 @@ class FrameOpenFile(tk.LabelFrame):
         self.scroll.pack(side=tk.LEFT, fill=tk.Y)
         self.box.config(yscrollcommand=self.scroll.set)
         # self.open_folder()
+
+        self.frm_chart = charts.FrameShowCharts(self)
+        self.frm_chart['text'] = 'График'
+        self.frm_chart.pack(side=tk.LEFT, anchor=tk.SE, fill=tk.BOTH)
+        # self.frm_chart.open_chart('Test_2021_11_3_15_49_37_0_qwer_asdf.csv')
 
     def open_folder(self, path='/sd0/'):
         for i in range(1, self.box.size()):
@@ -53,6 +56,8 @@ class FrameOpenFile(tk.LabelFrame):
             else:
                 csv_reader.copy_file(path, file_name)
                 csv_reader.open_file(file_name)
+                self.frm_chart.open_chart(file_name)
+        return file_name
 
 
 if __name__ == '__main__':

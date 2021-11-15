@@ -12,7 +12,6 @@ class Parameter:
         self.en_write = False
 
 
-
 class Parameters:
     def __init__(self):
         self.stack_of_writable_values = []
@@ -76,7 +75,8 @@ class Parameters:
                 word_1 = registers[parameter.reg_adr + 1]
                 buffer = struct.pack('HH', word_0, word_1)
                 # print(buffer)
-                parameter.value = '%.1f' % struct.unpack('f', buffer)[0]
+                # parameter.value = '%.3f' % struct.unpack('f', buffer)[0]
+                parameter.value = struct.unpack('f', buffer)[0]
                 # print(parameter.reg_adr, parameter.type, parameter.value)
             elif parameter.type == 'WSTRING(16)':
                 word = [0 for _ in range(17)]
@@ -172,7 +172,6 @@ class Parameters:
             else:
                 pass
                 # print('Skipped - ', parameter.type)
-
 
 
 if __name__ == '__main__':

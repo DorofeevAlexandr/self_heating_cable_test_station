@@ -2,13 +2,18 @@ import tkinter as tk
 import tkinter.messagebox as mb
 import window_open_dialog
 import control_plc as c_plc
+from tkinter import ttk
 
 WIDTH_1 = 15
 WIDTH_2 = 25
 
 
-def set_kth_bit(n, k):
-    return (1 << k) | n
+def set_kth_bit(num, pos):
+    return (1 << pos) | num
+
+
+def get_bit(num, pos):
+    return (num >> pos) & 1
 
 
 class MainMenu(tk.Frame):
@@ -21,8 +26,8 @@ class MainMenu(tk.Frame):
         # self.file_menu.add_command(label="Открыть...")
         # self.file_menu.add_command(label="Новый")
         file_menu.add_command(label="Настроить время в ПЛК", command=self.open_window_tuning_time_in_plc)
-        file_menu.add_separator()
-        file_menu.add_command(label="Выход", command=self.exit_program)
+        # file_menu.add_separator()
+        # file_menu.add_command(label="Выход", command=self.exit_program)
         menubar.add_cascade(label="Файл", menu=file_menu)
 
     @staticmethod
@@ -74,11 +79,10 @@ class WindowTuningTimeInPLC(tk.Toplevel):
         self.entry_second = tk.Entry(self, width=width_time, textvariable=self.second)
         self.entry_second.grid(row=3, column=6)
 
-
         self.update_values_of_entry()
         self.button_read_time = tk.Button(self, text="Обновить время", command=self.update_values_of_entry)
         self.button_write_time = tk.Button(self, text="Записать время", command=self.write_time)
-        self.button_close = tk.Button(self, text="Закрыть", command=self.confirm_delete)
+        self.button_close = tk.Button(self, text="Закрыть", command=self.close_window)
         self.button_read_time.grid(row=5, column=1)
         self.button_write_time.grid(row=5, column=3)
         self.button_close.grid(row=5, column=5)
@@ -95,19 +99,20 @@ class WindowTuningTimeInPLC(tk.Toplevel):
         self.second.set(s_time[14:16])
 
     def write_time(self):
-        write_value(self.entry_year, 'w_TimeWriteToPC_year')
-        write_value(self.entry_month, 'w_TimeWriteToPC_month')
-        write_value(self.entry_day, 'w_TimeWriteToPC_day')
-        write_value(self.entry_hour, 'w_TimeWriteToPC_hour')
-        write_value(self.entry_minute, 'w_TimeWriteToPC_min')
-        write_value(self.entry_second, 'w_TimeWriteToPC_sec')
+        message = "Подтвердите операцию"
+        if mb.askyesno(message=message, parent=self):
+            write_value(self.entry_year, 'w_TimeWriteToPC_year')
+            write_value(self.entry_month, 'w_TimeWriteToPC_month')
+            write_value(self.entry_day, 'w_TimeWriteToPC_day')
+            write_value(self.entry_hour, 'w_TimeWriteToPC_hour')
+            write_value(self.entry_minute, 'w_TimeWriteToPC_min')
+            write_value(self.entry_second, 'w_TimeWriteToPC_sec')
 
-        w_reg_control_1 = c_plc.parameters.p['w_RegControl_1'].value
-        c_plc.parameters.p['w_RegControl_1'].write_value = set_kth_bit(w_reg_control_1, 1)
-        c_plc.parameters.p['w_RegControl_1'].en_write = True
+            w_reg_control_1 = c_plc.parameters.p['w_RegControl_1'].value
+            c_plc.parameters.p['w_RegControl_1'].write_value = set_kth_bit(w_reg_control_1, 1)
+            c_plc.parameters.p['w_RegControl_1'].en_write = True
 
-
-    def confirm_delete(self):
+    def close_window(self):
         message = "Вы уверены, что хотите закрыть это окно?"
         if mb.askyesno(message=message, parent=self):
             self.destroy()
@@ -140,28 +145,36 @@ class FrameCurrentParams(tk.LabelFrame):
         self.voltage_testing = tk.StringVar()
         self.label_voltage_testing = tk.Label(self, text='Напряжение тестирования')
         self.entry_voltage_testing = tk.Entry(self, width=WIDTH_1, state='disabled', textvariable=self.voltage_testing)
-        self.label_voltage_testing.grid(row=3, column=0, sticky="e")
-        self.entry_voltage_testing.grid(row=3, column=1)
+        self.label_voltage_testing.grid(row=2, column=0, sticky="e")
+        self.entry_voltage_testing.grid(row=2, column=1)
 
         self.temp_test_unit_1 = tk.StringVar()
         self.label_temp_test_unit_1 = tk.Label(self, text='Температура испытательной установки 1')
         self.entry_temp_test_unit_1 = tk.Entry(self, width=WIDTH_1, state='disabled', textvariable=self.temp_test_unit_1)
-        self.label_temp_test_unit_1.grid(row=4, column=0, sticky="e")
-        self.entry_temp_test_unit_1.grid(row=4, column=1)
+        self.label_temp_test_unit_1.grid(row=3, column=0, sticky="e")
+        self.entry_temp_test_unit_1.grid(row=3, column=1)
 
         self.temp_test_unit_2 = tk.StringVar()
         self.label_temp_test_unit_2 = tk.Label(self, text='Температура испытательной установки 2')
         self.entry_temp_test_unit_2 = tk.Entry(self, width=WIDTH_1, state='disabled', textvariable=self.temp_test_unit_2)
-        self.label_temp_test_unit_2.grid(row=4, column=3, sticky="e")
-        self.entry_temp_test_unit_2.grid(row=4, column=4)
+        self.label_temp_test_unit_2.grid(row=4, column=0, sticky="e")
+        self.entry_temp_test_unit_2.grid(row=4, column=1)
+
+        self.button_ack = tk.Button(self, text="Сбросить аварию", command=self.ack_alarms)
+        self.button_ack.grid(row=4, column=4)
+
+    def ack_alarms(self):
+        w_reg_control_1 = c_plc.parameters.p['w_RegControl_1'].value
+        c_plc.parameters.p['w_RegControl_1'].write_value = set_kth_bit(w_reg_control_1, 15)
+        c_plc.parameters.p['w_RegControl_1'].en_write = True
 
     def update_values_of_entry(self):
         self.family_tester_1.set(str(c_plc.parameters.p['s_FamilyTester_1'].value))
         self.time_read_frompc.set(str(c_plc.parameters.p['s_TimeReadFromPC'].value)[8:16])
         self.date_read_frompc.set(str(c_plc.parameters.p['s_TimeReadFromPC'].value)[0:8])
-        self.voltage_testing.set(str(c_plc.parameters.p['r_VoltageTesting'].value))
-        self.temp_test_unit_1.set(str(c_plc.parameters.p['r_TempTestUnit_1'].value))
-        self.temp_test_unit_2.set(str(c_plc.parameters.p['r_TempTestUnit_2'].value))
+        self.voltage_testing.set(str('%.1f' % c_plc.parameters.p['r_VoltageTesting'].value))
+        self.temp_test_unit_1.set(str('%.1f' % c_plc.parameters.p['r_TempTestUnit_1'].value))
+        self.temp_test_unit_2.set(str('%.1f' % c_plc.parameters.p['r_TempTestUnit_2'].value))
 
 
 class FrameCurrentParamsUnit1(tk.LabelFrame):
@@ -241,13 +254,13 @@ class FrameCurrentParamsUnit1(tk.LabelFrame):
     def update_values_of_entry(self):
         self.kable_brand_test_1.set(str(c_plc.parameters.p['s_KableBrandTest_1'].value))
         self.batch_number_test_1.set(str(c_plc.parameters.p['s_BatchNumberTest_1'].value))
-        self.temp_start_test_1.set(str(c_plc.parameters.p['r_TempStartTest_1'].value))
+        self.temp_start_test_1.set(str('%.1f' % c_plc.parameters.p['r_TempStartTest_1'].value))
         self.exp_time_test_1.set(str(c_plc.parameters.p['w_ExpTimeTest_1'].value))
         self.len_time_test_1.set(str(c_plc.parameters.p['w_LenTimeTest_1'].value))
         self.time_pusk_test_1.set(str(c_plc.parameters.p['s_TimePuskTest_1'].value))
         self.time_start_test_1.set(str(c_plc.parameters.p['s_TimeStartTest_1'].value))
-        self.current_test_1.set(str(c_plc.parameters.p['r_CurrentTest_1'].value))
-        self.temp_test_1.set(str(c_plc.parameters.p['r_TempTest_1'].value))
+        self.current_test_1.set(str('%.3f' % c_plc.parameters.p['r_CurrentTest_1'].value))
+        self.temp_test_1.set(str('%.1f' % c_plc.parameters.p['r_TempTest_1'].value))
 
 
 class FrameCurrentParamsUnit2(tk.LabelFrame):
@@ -327,13 +340,13 @@ class FrameCurrentParamsUnit2(tk.LabelFrame):
     def update_values_of_entry(self):
         self.kable_brand_test_2.set(str(c_plc.parameters.p['s_KableBrandTest_2'].value))
         self.batch_number_test_2.set(str(c_plc.parameters.p['s_BatchNumberTest_2'].value))
-        self.temp_start_test_2.set(str(c_plc.parameters.p['r_TempStartTest_2'].value))
+        self.temp_start_test_2.set(str('%.1f' % c_plc.parameters.p['r_TempStartTest_2'].value))
         self.exp_time_test_2.set(str(c_plc.parameters.p['w_ExpTimeTest_2'].value))
         self.len_time_test_2.set(str(c_plc.parameters.p['w_LenTimeTest_2'].value))
         self.time_pusk_test_2.set(str(c_plc.parameters.p['s_TimePuskTest_2'].value))
         self.time_start_test_2.set(str(c_plc.parameters.p['s_TimeStartTest_2'].value))
-        self.current_test_2.set(str(c_plc.parameters.p['r_CurrentTest_2'].value))
-        self.temp_test_2.set(str(c_plc.parameters.p['r_TempTest_2'].value))
+        self.current_test_2.set(str('%.3f' % c_plc.parameters.p['r_CurrentTest_2'].value))
+        self.temp_test_2.set(str('%.1f' % c_plc.parameters.p['r_TempTest_2'].value))
 
 
 class FrameCurrentParamsUnit3(tk.LabelFrame):
@@ -413,52 +426,243 @@ class FrameCurrentParamsUnit3(tk.LabelFrame):
     def update_values_of_entry(self):
         self.kable_brand_test_3.set(str(c_plc.parameters.p['s_KableBrandTest_3'].value))
         self.batch_number_test_3.set(str(c_plc.parameters.p['s_BatchNumberTest_3'].value))
-        self.temp_start_test_3.set(str(c_plc.parameters.p['r_TempStartTest_3'].value))
+        self.temp_start_test_3.set(str('%.1f' % c_plc.parameters.p['r_TempStartTest_3'].value))
         self.exp_time_test_3.set(str(c_plc.parameters.p['w_ExpTimeTest_3'].value))
         self.len_time_test_3.set(str(c_plc.parameters.p['w_LenTimeTest_3'].value))
         self.time_pusk_test_3.set(str(c_plc.parameters.p['s_TimePuskTest_3'].value))
         self.time_start_test_3.set(str(c_plc.parameters.p['s_TimeStartTest_3'].value))
-        self.current_test_3.set(str(c_plc.parameters.p['r_CurrentTest_3'].value))
-        self.temp_test_3.set(str(c_plc.parameters.p['r_TempTest_3'].value))
+        self.current_test_3.set(str('%.3f' % c_plc.parameters.p['r_CurrentTest_3'].value))
+        self.temp_test_3.set(str('%.1f' % c_plc.parameters.p['r_TempTest_3'].value))
+
+
+class FrameTechnologicalScheme(tk.LabelFrame):
+    def __init__(self, parent=None):
+        tk.LabelFrame.__init__(self, parent)
+        self.pack(expand=1)
+
+        canvas = tk.Canvas(self)
+        x0, y0 = 30, 100
+        tube_width, tube_height = 1000, 450
+        zone_width = tube_width // 3
+        # Рисуем трубу
+        canvas.create_rectangle(x0, y0, x0 + tube_width, y0 + tube_height, width=3)
+        # Рисуем отводы к трубе
+        canvas.create_line(x0 // 4, y0 + tube_height // 2, x0, y0 + tube_height // 2, width=3)
+        canvas.create_line(x0 + tube_width, y0 + tube_height // 2, x0 + tube_width + x0 * 3 // 4, y0 + tube_height // 2, width=3)
+        # Рисуем разделители зон
+        canvas.create_line(x0 + zone_width, y0, x0 + zone_width, y0 + tube_height, dash=(4, 2))
+        canvas.create_line(x0 + 2 * zone_width, y0, x0 + 2 * zone_width, y0 + tube_height, dash=(4, 2))
+        canvas.pack(fill=tk.BOTH, expand=1)
+
+        self.label_voltage_testing = tk.Label(self, text='Напряжение тестирования')
+        self.label_voltage_testing_val = tk.Label(self, text='Напряжение')
+        self.label_voltage_testing_val.config(font=("Times", "40", "bold"), bg="Black", fg='Red')
+        self.label_voltage_testing.place(x=5, y=0)
+        self.label_voltage_testing_val.place(x=5, y=20)
+
+        self.label_temp_test_unit_1 = tk.Label(self, text='Температура установки 1')
+        self.label_temp_test_unit_1_val = tk.Label(self, text='Температура установки 1')
+        self.label_temp_test_unit_1_val.config(font=("Times", "40", "bold"), bg="Black", fg='Red')
+        self.label_temp_test_unit_1.place(x=x0, y=y0+tube_height+10)
+        self.label_temp_test_unit_1_val.place(x=x0, y=y0+tube_height+30)
+
+        self.label_temp_test_unit_2 = tk.Label(self, text='Температура установки 2')
+        self.label_temp_test_unit_2_val = tk.Label(self, text='Температура установки 2')
+        self.label_temp_test_unit_2_val.config(font=("Times", "40", "bold"), bg="Black", fg='Red')
+        self.label_temp_test_unit_2.place(x=x0+tube_width-200, y=y0+tube_height+10)
+        self.label_temp_test_unit_2_val.place(x=x0+tube_width-200, y=y0+tube_height+30)
+
+        x0_zone1, y0_zone1 = x0 + zone_width // 10, y0 + 5
+        # zone 1
+        self.label_current_test_1 = tk.Label(self, text='Ток образца 1, А')
+        self.label_current_test_1_val = tk.Label(self, text='Ток образца 1, А')
+        self.label_current_test_1_val.config(font=("Times", "40", "bold"), bg="Black", fg='Red')
+        self.label_current_test_1.place(x=x0_zone1, y=y0_zone1)
+        self.label_current_test_1_val.place(x=x0_zone1, y=y0_zone1+20)
+
+        self.label_power_test_1 = tk.Label(self, text='Мощность образца 1, Вт')
+        self.label_power_test_1_val = tk.Label(self, text='Мощность образца 1, Вт')
+        self.label_power_test_1_val.config(font=("Times", "40", "bold"), bg="Black", fg='Red')
+        self.label_power_test_1.place(x=x0_zone1, y=y0_zone1+90)
+        self.label_power_test_1_val.place(x=x0_zone1, y=y0_zone1+110)
+
+        self.label_temp_test_1 = tk.Label(self, text='Температура образца 1, гр С')
+        self.label_temp_test_1_val = tk.Label(self, text='Температура образца 1, гр С')
+        self.label_temp_test_1_val.config(font=("Times", "40", "bold"), bg="Black", fg='Red')
+        self.label_temp_test_1.place(x=x0_zone1, y=y0_zone1+190)
+        self.label_temp_test_1_val.place(x=x0_zone1, y=y0_zone1+210)
+
+        self.label_status_test_1 = tk.Label(self, text='Статус 1')
+        self.label_status_test_1.config(font=("Times", "40", "bold"), bg="White")
+        self.label_status_test_1.place(x=x0_zone1, y=y0_zone1+300)
+
+        self.button_start_test_1 = tk.Button(self, text="Пуск", command=lambda: self.set_bit_control_word(4))
+        self.button_start_test_1.config(font=("Times", "20", "bold"), bg="Green")
+        self.button_start_test_1.place(x=x0_zone1, y=y0_zone1 + 380)
+        self.button_stop_test_1 = tk.Button(self, text="Стоп", command=lambda: self.set_bit_control_word(5))
+        self.button_stop_test_1.config(font=("Times", "20", "bold"), bg="Red")
+        self.button_stop_test_1.place(x=x0_zone1+zone_width//3, y=y0_zone1+380)
+
+        # zone 2
+        self.label_current_test_2 = tk.Label(self, text='Ток образца 2 А')
+        self.label_current_test_2_val = tk.Label(self, text='Ток образца 2, А')
+        self.label_current_test_2_val.config(font=("Times", "40", "bold"), bg="Black", fg='Red')
+        self.label_current_test_2.place(x=x0_zone1+zone_width, y=y0_zone1)
+        self.label_current_test_2_val.place(x=x0_zone1+zone_width, y=y0_zone1+20)
+
+        self.label_power_test_2 = tk.Label(self, text='Мощность образца 2, Вт')
+        self.label_power_test_2_val = tk.Label(self, text='Мощность образца 2, Вт')
+        self.label_power_test_2_val.config(font=("Times", "40", "bold"), bg="Black", fg='Red')
+        self.label_power_test_2.place(x=x0_zone1+zone_width, y=y0_zone1+90)
+        self.label_power_test_2_val.place(x=x0_zone1+zone_width, y=y0_zone1+110)
+
+        self.label_temp_test_2 = tk.Label(self, text='Температура образца 2, гр С')
+        self.label_temp_test_2_val = tk.Label(self, text='Температура образца 2, гр С')
+        self.label_temp_test_2_val.config(font=("Times", "40", "bold"), bg="Black", fg='Red')
+        self.label_temp_test_2.place(x=x0_zone1+zone_width, y=y0_zone1+190)
+        self.label_temp_test_2_val.place(x=x0_zone1+zone_width, y=y0_zone1+210)
+
+        self.label_status_test_2 = tk.Label(self, text='Статус 2')
+        self.label_status_test_2.config(font=("Times", "40", "bold"), bg="White")
+        self.label_status_test_2.place(x=x0_zone1+zone_width, y=y0_zone1 + 300)
+
+        self.button_start_test_2 = tk.Button(self, text="Пуск", command=lambda: self.set_bit_control_word(7))
+        self.button_start_test_2.config(font=("Times", "20", "bold"), bg="Green")
+        self.button_start_test_2.place(x=x0_zone1+zone_width, y=y0_zone1 + 380)
+        self.button_stop_test_2 = tk.Button(self, text="Стоп", command=lambda: self.set_bit_control_word(8))
+        self.button_stop_test_2.config(font=("Times", "20", "bold"), bg="Red")
+        self.button_stop_test_2.place(x=x0_zone1+zone_width//3+zone_width, y=y0_zone1+380)
+
+        # zone 3
+        self.label_current_test_3 = tk.Label(self, text='Ток образца 3, А')
+        self.label_current_test_3_val = tk.Label(self, text='Ток образца 3, А')
+        self.label_current_test_3_val.config(font=("Times", "40", "bold"), bg="Black", fg='Red')
+        self.label_current_test_3.place(x=x0_zone1+2*zone_width, y=y0_zone1)
+        self.label_current_test_3_val.place(x=x0_zone1+2*zone_width, y=y0_zone1+20)
+
+        self.label_power_test_3 = tk.Label(self, text='Мощность образца 3, Вт')
+        self.label_power_test_3_val = tk.Label(self, text='Мощность образца 3, Вт')
+        self.label_power_test_3_val.config(font=("Times", "40", "bold"), bg="Black", fg='Red')
+        self.label_power_test_3.place(x=x0_zone1+2*zone_width, y=y0_zone1+90)
+        self.label_power_test_3_val.place(x=x0_zone1+2*zone_width, y=y0_zone1+110)
+
+        self.label_temp_test_3 = tk.Label(self, text='Температура образца 3, гр С')
+        self.label_temp_test_3_val = tk.Label(self, text='Температура образца 3, гр С')
+        self.label_temp_test_3_val.config(font=("Times", "40", "bold"), bg="Black", fg='Red')
+        self.label_temp_test_3.place(x=x0_zone1+2*zone_width, y=y0_zone1+190)
+        self.label_temp_test_3_val.place(x=x0_zone1+2*zone_width, y=y0_zone1+210)
+
+        self.label_status_test_3 = tk.Label(self, text='Статус 3')
+        self.label_status_test_3.config(font=("Times", "40", "bold"), bg="White")
+        self.label_status_test_3.place(x=x0_zone1+2*zone_width, y=y0_zone1 + 300)
+
+        self.button_start_test_3 = tk.Button(self, text="Пуск", command=lambda: self.set_bit_control_word(10))
+        self.button_start_test_3.config(font=("Times", "20", "bold"), bg="Green")
+        self.button_start_test_3.place(x=x0_zone1+2*zone_width, y=y0_zone1 + 380)
+        self.button_stop_test_3 = tk.Button(self, text="Стоп", command=lambda: self.set_bit_control_word(11))
+        self.button_stop_test_3.config(font=("Times", "20", "bold"), bg="Red")
+        self.button_stop_test_3.place(x=x0_zone1+zone_width//3+2*zone_width, y=y0_zone1+380)
+
+    def set_bit_control_word(self, pos):
+        message = "Подтвердите операцию"
+        if mb.askyesno(message=message, parent=self):
+            w_reg_control_1 = c_plc.parameters.p['w_RegControl_1'].value
+            c_plc.parameters.p['w_RegControl_1'].write_value = set_kth_bit(w_reg_control_1, pos)
+            c_plc.parameters.p['w_RegControl_1'].en_write = True
+
+    def update_values(self):
+        self.label_voltage_testing_val['text'] = str('%.1f' % c_plc.parameters.p['r_VoltageTesting'].value) + ' V'
+        self.label_temp_test_unit_1_val['text'] = str('%.2f' % c_plc.parameters.p['r_TempTestUnit_1'].value) + ' °C'
+        self.label_temp_test_unit_2_val['text'] = str('%.2f' % c_plc.parameters.p['r_TempTestUnit_2'].value) + ' °C'
+
+        self.label_current_test_1_val['text'] = str('%.3f' % c_plc.parameters.p['r_CurrentTest_1'].value) + ' A'
+        self.label_temp_test_1_val['text'] = str('%.2f' % c_plc.parameters.p['r_TempTest_1'].value) + ' °C'
+
+        self.label_current_test_2_val['text'] = str('%.3f' % c_plc.parameters.p['r_CurrentTest_2'].value) + ' A'
+        self.label_temp_test_2_val['text'] = str('%.2f' % c_plc.parameters.p['r_TempTest_2'].value) + ' °C'
+
+        self.label_current_test_3_val['text'] = str('%.3f' % c_plc.parameters.p['r_CurrentTest_3'].value) + ' A'
+        self.label_temp_test_3_val['text'] = str('%.2f' % c_plc.parameters.p['r_TempTest_3'].value) + ' °C'
+
+        power_1 = float(c_plc.parameters.p['r_VoltageTesting'].value) * float(
+            c_plc.parameters.p['r_CurrentTest_1'].value)
+        power_2 = float(c_plc.parameters.p['r_VoltageTesting'].value) * float(
+            c_plc.parameters.p['r_CurrentTest_2'].value)
+        power_3 = float(c_plc.parameters.p['r_VoltageTesting'].value) * float(
+            c_plc.parameters.p['r_CurrentTest_3'].value)
+
+        self.label_power_test_1_val['text'] = str('%.1f' % power_1) + ' Вт'
+        self.label_power_test_2_val['text'] = str('%.1f' % power_2) + ' Вт'
+        self.label_power_test_3_val['text'] = str('%.1f' % power_3) + ' Вт'
+
+        self.control_status(self.label_status_test_1, c_plc.parameters.p['w_RegStatus_1'].value, 0, 1, 2)
+        self.control_status(self.label_status_test_2, c_plc.parameters.p['w_RegStatus_1'].value, 3, 4, 5)
+        self.control_status(self.label_status_test_3, c_plc.parameters.p['w_RegStatus_1'].value, 6, 7, 8)
+
+    def control_status(self, label, status_word, pos_1, pos_2, pos_3):
+        if get_bit(status_word, pos_1):
+            label['text'] = 'Выдержка'
+            label.config(bg="Yellow")
+        elif get_bit(status_word, pos_2):
+            label['text'] = 'Испытание'
+            label.config(bg="Green")
+        elif get_bit(status_word, pos_3):
+            label['text'] = 'Завершено'
+            label.config(bg="Red")
+        else:
+            label['text'] = ''
+            label.config(bg="White")
 
 
 # Создается новое окно с заголовком.
 window = tk.Tk()
+#window.attributes('-fullscreen', True)
+# window.attributes('-topmost', True)
+
 window.title("Испытание самогреющегося кабеля")
 
 main_menu = MainMenu(window)
 
-frm_params = tk.Frame(relief=tk.SUNKEN, borderwidth=3)
+note = ttk.Notebook(window)
+
+frm_params = tk.Frame(note, relief=tk.SUNKEN, borderwidth=3)
 frm_params.pack(side=tk.TOP, anchor=tk.N, fill=tk.X)
+note.add(frm_params, text="Стенд")
+frm_archives = ttk.Frame(note)
+note.add(frm_archives, text="Архив")
+note.pack(side=tk.LEFT, anchor=tk.NW, fill=tk.BOTH)
 
 frm_cur_pars = FrameCurrentParams(frm_params)
 frm_cur_pars['relief'] = tk.SUNKEN
-frm_cur_pars['borderwidth'] = 3
+frm_cur_pars['borderwidth'] = 1
 frm_cur_pars.pack(side=tk.TOP, anchor=tk.N, fill=tk.X)
 
-frm_cur_pars_unit_1 = FrameCurrentParamsUnit1(frm_params)
+frm_cur_pars_units = tk.Frame(frm_params, relief=tk.SUNKEN, borderwidth=1)
+frm_cur_pars_units.pack(side=tk.TOP, anchor=tk.N, fill=tk.X)
+
+frm_cur_pars_unit_1 = FrameCurrentParamsUnit1(frm_cur_pars_units)
 frm_cur_pars_unit_1['relief'] = tk.SUNKEN
 frm_cur_pars_unit_1['text'] = 'Образец № 1'
 frm_cur_pars_unit_1['borderwidth'] = 3
 frm_cur_pars_unit_1.pack(side=tk.LEFT, anchor=tk.N)
 
-frm_cur_pars_unit_2 = FrameCurrentParamsUnit2(frm_params)
+frm_cur_pars_unit_2 = FrameCurrentParamsUnit2(frm_cur_pars_units)
 frm_cur_pars_unit_2['relief'] = tk.SUNKEN
 frm_cur_pars_unit_2['text'] = 'Образец № 2'
 frm_cur_pars_unit_2['borderwidth'] = 3
 frm_cur_pars_unit_2.pack(side=tk.LEFT, anchor=tk.N)
 
-frm_cur_pars_unit_3 = FrameCurrentParamsUnit3(frm_params)
+frm_cur_pars_unit_3 = FrameCurrentParamsUnit3(frm_cur_pars_units)
 frm_cur_pars_unit_3['relief'] = tk.SUNKEN
 frm_cur_pars_unit_3['text'] = 'Образец № 3'
 frm_cur_pars_unit_3['borderwidth'] = 3
 frm_cur_pars_unit_3.pack(side=tk.LEFT, anchor=tk.N)
 
+frm_technolgical_scheme = FrameTechnologicalScheme(frm_params)
+frm_technolgical_scheme.pack(side=tk.BOTTOM, anchor=tk.SW, fill=tk.BOTH)
 
-fr = window_open_dialog.FrameOpenFile()
-fr.pack(side=tk.LEFT, anchor=tk.NW, fill=tk.BOTH)
-
-
+frm_window_open_dialog = window_open_dialog.FrameOpenFile(frm_archives)
+frm_window_open_dialog.pack(side=tk.LEFT, anchor=tk.NW, fill=tk.BOTH)
 # =================================================================================================
 
 skipp_update = 0
@@ -481,8 +685,9 @@ def update():
         frm_cur_pars_unit_1.update_values_of_entry()
         frm_cur_pars_unit_2.update_values_of_entry()
         frm_cur_pars_unit_3.update_values_of_entry()
+        frm_technolgical_scheme.update_values()
 
-    window.after(3000, update)
+    window.after(1000, update)
 
 
 def write_value(entry, key):

@@ -7,7 +7,7 @@ class CsvFileReader:
         self.month = month
         self.day = day
         self.host = host
-        self. username = username
+        self.username = username
         self.password = password
         self.ftp = FTP(self.host)
 
