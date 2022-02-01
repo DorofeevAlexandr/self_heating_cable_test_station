@@ -3,6 +3,7 @@ import tkinter.messagebox as mb
 import window_open_dialog
 import control_plc as c_plc
 from tkinter import ttk
+import datetime as dt
 
 WIDTH_1 = 15
 WIDTH_2 = 25
@@ -442,7 +443,7 @@ class FrameTechnologicalScheme(tk.LabelFrame):
 
         canvas = tk.Canvas(self)
         x0, y0 = 30, 100
-        tube_width, tube_height = 1000, 450
+        tube_width, tube_height = 1090, 450
         zone_width = tube_width // 3
         # Рисуем трубу
         canvas.create_rectangle(x0, y0, x0 + tube_width, y0 + tube_height, width=3)
@@ -460,17 +461,17 @@ class FrameTechnologicalScheme(tk.LabelFrame):
         self.label_voltage_testing.place(x=5, y=0)
         self.label_voltage_testing_val.place(x=5, y=20)
 
-        self.label_temp_test_unit_1 = tk.Label(self, text='Температура установки 1')
+        self.label_temp_test_unit_1 = tk.Label(self, text='Температура установки на входе')
         self.label_temp_test_unit_1_val = tk.Label(self, text='Температура установки 1')
         self.label_temp_test_unit_1_val.config(font=("Times", "40", "bold"), bg="Black", fg='Red')
-        self.label_temp_test_unit_1.place(x=x0, y=y0+tube_height+10)
-        self.label_temp_test_unit_1_val.place(x=x0, y=y0+tube_height+30)
+        self.label_temp_test_unit_1.place(x=x0+tube_width-200, y=y0+tube_height+10)
+        self.label_temp_test_unit_1_val.place(x=x0+tube_width-200, y=y0+tube_height+30)
 
-        self.label_temp_test_unit_2 = tk.Label(self, text='Температура установки 2')
+        self.label_temp_test_unit_2 = tk.Label(self, text='Температура установки на выходе')
         self.label_temp_test_unit_2_val = tk.Label(self, text='Температура установки 2')
         self.label_temp_test_unit_2_val.config(font=("Times", "40", "bold"), bg="Black", fg='Red')
-        self.label_temp_test_unit_2.place(x=x0+tube_width-200, y=y0+tube_height+10)
-        self.label_temp_test_unit_2_val.place(x=x0+tube_width-200, y=y0+tube_height+30)
+        self.label_temp_test_unit_2.place(x=x0, y=y0+tube_height+10)
+        self.label_temp_test_unit_2_val.place(x=x0, y=y0+tube_height+30)
 
         x0_zone1, y0_zone1 = x0 + zone_width // 10, y0 + 5
         # zone 1
@@ -598,6 +599,13 @@ class FrameTechnologicalScheme(tk.LabelFrame):
         self.control_status(self.label_status_test_1, c_plc.parameters.p['w_RegStatus_1'].value, 0, 1, 2)
         self.control_status(self.label_status_test_2, c_plc.parameters.p['w_RegStatus_1'].value, 3, 4, 5)
         self.control_status(self.label_status_test_3, c_plc.parameters.p['w_RegStatus_1'].value, 6, 7, 8)
+
+        '''st_start = str(c_plc.parameters.p['s_TimeStartTest_3'].value)[8, -1]
+        try:
+            t_start = dt.datetime.strptime("{}".format(st_start), '%H:%M:%S')
+        except TypeError:
+            t_start = 0
+        '''
 
     def control_status(self, label, status_word, pos_1, pos_2, pos_3):
         if get_bit(status_word, pos_1):

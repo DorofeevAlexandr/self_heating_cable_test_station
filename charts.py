@@ -1,10 +1,10 @@
 import tkinter as tk
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import matplotlib.dates as mdates
 import datetime as dt
 import csv
+
+import multi_cursor
 
 
 class FrameShowCharts(tk.LabelFrame):
@@ -20,8 +20,12 @@ class FrameShowCharts(tk.LabelFrame):
 
         self.figure_1 = plt.Figure(figsize=(1, 1), facecolor='white')
         # self.figure_1.tight_layout()
-        self.ax = [self.figure_1.add_subplot(3, 1, x + 1) for x in range(3)]
-
+        # self.ax = [self.figure_1.add_subplot(4, 1, x + 1) for x in range(4)]
+        self.ax = []
+        self.ax.append(self.figure_1.add_subplot(4, 1, 1))
+        self.ax.append(self.figure_1.add_subplot(4, 1, 2, sharex=self.ax[0]))
+        self.ax.append(self.figure_1.add_subplot(4, 1, 3, sharex=self.ax[0]))
+        self.ax.append(self.figure_1.add_subplot(4, 1, 4, sharex=self.ax[0]))
 
         # ax = plt.axes()
         '''ax.yaxis.grid(True)
@@ -42,33 +46,38 @@ class FrameShowCharts(tk.LabelFrame):
         values_3 = []
         values_4 = []
         values_5 = []
+        values_power = []
+
 
         with open(file_name, newline='') as f:
             for row in csv.reader(f, delimiter=';', quotechar='"'):
                 print(row)
                 try:
-                    dates.append(dt.datetime.strptime("{}".format(row[0]), '%H:%M:%S:%f'))
+                    dates.append(dt.datetime.strptime("{}".format('2000 ' + row[0]), '%Y %H:%M:%S:%f'))
                     values_1.append(float(row[1]))
                     values_2.append(float(row[2]))
                     values_3.append(float(row[3]))
                     values_4.append(float(row[4]))
                     values_5.append(float(row[5]))
+                    values_power.append(float(row[1]) * float(row[5]))
                 except ValueError:
                     print('Прочитано некоректное значение', )
         self.ax[0].clear()
         self.ax[1].clear()
         self.ax[2].clear()
+        self.ax[3].clear()
         self.figure_1.autofmt_xdate()
 
         self.ax[0].plot(dates, values_1, label='Ток образца', linestyle='solid', marker='o', markersize=3, color='green')
         # self.ax[0].legend(loc='upper left')
         self.ax[0].set_ylabel('Ток образца, А')
+        self.ax[0].set_title('Ток образца, А')
         # self.ax[0].set_xlabel('Время')
         self.ax[0].grid()
 
         self.ax[1].plot(dates, values_2, label='Т образца', linestyle='solid', marker='o', markersize=3, color='red')
-        self.ax[1].plot(dates, values_3, label='T установки 1', linestyle='solid', marker='o', markersize=3, color='black')
-        self.ax[1].plot(dates, values_4, label='Т установки 2', linestyle='solid', marker='o', markersize=3, color='orange')
+        self.ax[1].plot(dates, values_3, label='T установки на входе', linestyle='solid', marker='o', markersize=3, color='black')
+        self.ax[1].plot(dates, values_4, label='Т установки на выходе', linestyle='solid', marker='o', markersize=3, color='orange')
         self.ax[1].legend(loc='upper left')
         self.ax[1].set_ylabel('Температура, °С')
         # self.ax[1].set_xlabel('Время')
@@ -81,6 +90,23 @@ class FrameShowCharts(tk.LabelFrame):
         # self.ax[2].set_xlabel('Время')
         self.ax[2].grid()
 
+        self.ax[3].plot(dates, values_power, label='P', linestyle='solid', marker='o', markersize=3, color='blue')
+        # self.ax[3].set_title('Мощность кабеля')
+        # self.ax[3].legend(loc='upper left')
+        self.ax[3].set_ylabel('Мощность, Вт')
+        # self.ax[3].set_xlabel('Время')
+        self.ax[3].grid()
+
         self.canvas.draw()
         # plt.show()
 
+        # from matplotlib.widgets import MultiCursor
+        # self.multi = MultiCursor(self.figure_1.canvas, (self.ax[0], self.ax[1], self.ax[2],  self.ax[3]), color='g', lw=2,
+        #                     horizOn=False, vertOn=True)
+
+        self.cursor = multi_cursor.MultiCursor(self.figure_1.canvas, (self.ax[0], self.ax[1], self.ax[2],  self.ax[3]),
+                             x_data=dates, x_label='T',
+                             y_data=[values_1, [values_2, values_3, values_4], values_5, values_power],
+                             y_labels=['I', ['t', 't_in', 't_out'], 'U', 'P'],
+                             color='r', lw=1, horizOn=True, useblit=False
+                             )

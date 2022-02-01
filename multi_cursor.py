@@ -1,8 +1,8 @@
 import numpy as np
-import matplotlib
-# matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 from matplotlib.widgets import MultiCursor as _MultiCursor
+import datetime as dt
+
 
 class MultiCursor(_MultiCursor):
     """MultiCursor widget subclass that snaps to plot data
@@ -23,16 +23,11 @@ class MultiCursor(_MultiCursor):
     def __init__(self, *args, **kwargs):
         self.x_data = kwargs.pop('x_data')
         self.x_label = kwargs.pop('x_label')
-        self.x_format_func = kwargs.pop('x_format_func', None)
         self.y_data = kwargs.pop('y_data')
         self.y_labels = kwargs.pop('y_labels')
-        self.y_format_funcs = kwargs.pop('y_format_funcs', None)
-        if self.y_format_funcs is None:
-            self.y_format_funcs = [None] * len(self.y_data)
         self.current_data_x = None
         self.toolbar_message = None
         super().__init__(*args, **kwargs)
-
 
     def onmove(self, event):
         if self.ignore(event):
@@ -42,31 +37,35 @@ class MultiCursor(_MultiCursor):
         if not self.canvas.widgetlock.available(self):
             return
 
-        x = event.xdata
+        x0 = event.xdata
+        x = dt.datetime(1970, 1, 1) + dt.timedelta(x0)
         ax = event.inaxes
         if ax not in self.axes:
             return
-        fmin = self.x_data.min()
-        fmax = self.x_data.max()
+        fmin = self.x_data[0]
+        fmax = self.x_data[len(self.x_data)-1]
         if x < fmin:
             i_x = 0
         elif x > fmax:
-            i_x = self.x_data.size - 1
+            i_x = len(self.x_data) - 1
         else:
-            i_x = np.abs(self.x_data - x).argmin()
+            for index, t in enumerate(self.x_data):
+                if np.abs(t - x) < dt.timedelta(milliseconds=500):
+                    i_x = index
+                    break
+            # i_x = self.x_data.index(x)
+            # i_x = np.abs(self.x_data - x).argmin()
         data_x = self.x_data[i_x]
         if data_x == self.current_data_x:
             msg = self.toolbar_message
-            if msg is not None:
-                self.canvas.toolbar.set_message(msg)
+            # if msg is not None:
+            #     self.canvas.toolbar.set_message(msg)
             return
 
-        if self.x_format_func is not None:
-            x_str = self.x_format_func(data_x)
-        else:
-            x_str = str(data_x)
+        x_str = str(data_x.time())
         labels = [(self.x_label, x_str)]
         self.needclear = True
+
         if not self.visible:
             return
         if self.vertOn:
@@ -74,20 +73,46 @@ class MultiCursor(_MultiCursor):
                 line.set_xdata((data_x, data_x))
                 line.set_visible(self.visible)
         if self.horizOn:
-            for lbl, y_arr, line, fmt_func in zip(self.y_labels, self.y_data, self.hlines, self.y_format_funcs):
-                data_y = y_arr[i_x]
-                if fmt_func is not None:
-                    y_str = fmt_func(data_y)
+            for lbl, y_arr, line in zip(self.y_labels, self.y_data, self.hlines):
+                if type(y_arr[0]) == list:
+                    labels.append((lbl[0], str('%.1f' % y_arr[0][i_x])))
+                    labels.append((lbl[1], str('%.1f' % y_arr[1][i_x])))
+                    labels.append((lbl[2], str('%.1f' % y_arr[2][i_x])))
+                    line.set_ydata((y_arr[0][i_x], y_arr[0][i_x]))
                 else:
-                    y_str = str(data_y)
-                labels.append((lbl, y_str))
-                line.set_ydata((data_y, data_y))
+                    data_y = y_arr[i_x]
+                    y_str = str('%.3f' % data_y)
+                    labels.append((lbl, y_str))
+                    line.set_ydata((data_y, data_y))
                 line.set_visible(self.visible)
+
         self.current_data_x = data_x
-        self._update()
         msg = ', '.join(['='.join(lbl) for lbl in labels])
         self.toolbar_message = msg
-        self.canvas.toolbar.set_message(msg)
+        s_time = ', ' + labels[0][0] + ' = ' + labels[0][1]
+        s_current = labels[1][0] + ' = ' + labels[1][1]
+        s_temper = labels[2][0] + ' = ' + labels[2][1] + ', ' +\
+                   labels[3][0] + ' = ' + labels[3][1] + ', ' + \
+                   labels[4][0] + ' = ' + labels[4][1]
+        s_u = labels[5][0] + ' = ' + labels[5][1]
+        s_power = labels[6][0] + ' = ' + labels[6][1]
+
+        self.axes[0].set_title(s_current + s_time)
+        self.axes[1].set_title(s_temper + s_time)
+        self.axes[2].set_title(s_u + s_time)
+        self.axes[3].set_title(s_power + s_time)
+
+        self.axes[0].set_ylim(0, max(self.y_data[0]))
+        self.axes[1].set_ylim(min(min(self.y_data[1][0]), min(self.y_data[1][1]), min(self.y_data[1][2])),
+                              max(max(self.y_data[1][0]), max(self.y_data[1][1]), max(self.y_data[1][2])))
+        self.axes[2].set_ylim(0, 250)
+
+
+
+
+        # self.axes[0].draw_artist(self.axes[0].)
+        # self.canvas.draw()
+        self._update()
 
 if __name__ == '__main__':
     T = 2.0
@@ -98,6 +123,7 @@ if __name__ == '__main__':
 
     def format_x(value):
         return '{:.3f}'.format(value)
+
     def format_y(value):
         return '{:.3f}'.format(value)
 
@@ -112,7 +138,7 @@ if __name__ == '__main__':
     cursor = MultiCursor(fig.canvas, (ax0, ax1),
         x_data=xdata, x_label='T', x_format_func=format_x,
         y_data=[y0, y1], y_labels=['cos', 'sin'], y_format_funcs=[format_y, format_y],
-        color='r', lw=1, horizOn=True,
+        color='r', lw=1, horizOn=True, useblit=True
     )
 
     plt.show()
