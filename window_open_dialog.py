@@ -20,6 +20,11 @@ class FrameOpenFile(tk.LabelFrame):
         self.box.config(yscrollcommand=self.scroll.set)
         # self.open_folder()
 
+        self.button_create_report = tk.Button(self, text="Сформировать отчет")
+        # self.button_create_report.config(font=("Times", "12", "bold"))
+        # self.button_create_report.place(x=10, y=20)
+        self.button_create_report.pack(side=tk.TOP, fill=tk.X)
+
         self.frm_chart = charts.FrameShowCharts(self)
         self.frm_chart['text'] = 'График'
         self.frm_chart.pack(side=tk.LEFT, anchor=tk.SE, fill=tk.BOTH)

@@ -11,13 +11,14 @@ class FrameShowCharts(tk.LabelFrame):
     def __init__(self, parent=None):
         tk.LabelFrame.__init__(self, parent, width=3000, height=100)
         self.pack(fill=tk.BOTH)
-
+        '''    
         self.label = tk.Label(self, text='kjhjhjgghfhfgdfgdfgdfgdfdfgdfgdrfkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk'
                                          'kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkghjghjh'
                                          'ghffffffffffffjhuygggggggggggggggggggggggggggggggggggggggggggggggggggggggggg'
                                          'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
+        
         self.label.pack(side=tk.TOP, fill=tk.Y, anchor=tk.NW)
-
+        '''
         self.figure_1 = plt.Figure(figsize=(1, 1), facecolor='white')
         # self.figure_1.tight_layout()
         # self.ax = [self.figure_1.add_subplot(4, 1, x + 1) for x in range(4)]
