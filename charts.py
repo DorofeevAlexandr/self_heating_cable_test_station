@@ -52,7 +52,7 @@ class FrameShowCharts(tk.LabelFrame):
 
         with open(file_name, newline='') as f:
             for row in csv.reader(f, delimiter=';', quotechar='"'):
-                print(row)
+                # print(row)
                 try:
                     dates.append(dt.datetime.strptime("{}".format('2000 ' + row[0]), '%Y %H:%M:%S:%f'))
                     values_1.append(float(row[1]))
