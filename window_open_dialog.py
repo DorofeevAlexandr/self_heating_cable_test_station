@@ -1,3 +1,4 @@
+from report import create_report_pdf
 import tkinter as tk
 from reading_csv_file_ftp import CsvFileReader
 import charts
@@ -20,7 +21,7 @@ class FrameOpenFile(tk.LabelFrame):
         self.box.config(yscrollcommand=self.scroll.set)
         # self.open_folder()
 
-        self.button_create_report = tk.Button(self, text="Сформировать отчет")
+        self.button_create_report = tk.Button(self, text="Сформировать отчет", command=lambda: self.create_report())
         # self.button_create_report.config(font=("Times", "12", "bold"))
         # self.button_create_report.place(x=10, y=20)
         self.button_create_report.pack(side=tk.TOP, fill=tk.X)
@@ -29,6 +30,9 @@ class FrameOpenFile(tk.LabelFrame):
         self.frm_chart['text'] = 'График'
         self.frm_chart.pack(side=tk.LEFT, anchor=tk.SE, fill=tk.BOTH)
         self.frm_chart.open_chart('Sample1_2021_11_16__16_16_51_kab_nomer.csv')
+
+    def create_report(self):
+        create_report_pdf(self.frm_chart.figure_1)
 
     def open_folder(self, path='/sd0/'):
         for i in range(1, self.box.size()):
