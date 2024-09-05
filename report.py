@@ -35,7 +35,7 @@ def create_report_pdf(figure: plt.figure, report_name: str ='fig2'):
     image = ImageReader(image)
 
     # Размер фигуры в см.
-    zoom_level = 0.5
+    zoom_level = 0.6
     figureSize = figure.get_size_inches()*2.54 * zoom_level
     
 
@@ -44,11 +44,10 @@ def create_report_pdf(figure: plt.figure, report_name: str ='fig2'):
     if height + figureSize[1] + indent > 29.7:
         height = indent
         c.showPage()
-    height = height * zoom_level
-    height = 5
+
     # Добавляем image в pdf
-    c.drawImage(image, (11-figureSize[0]/2)*cm, height*cm,
-                figureSize[0]*cm, 1.5*figureSize[1]*cm)
+    c.drawImage(image, (21.5-figureSize[0]/2)*cm, height*cm,
+                figureSize[0]*cm, figureSize[1]*cm)
     height += figureSize[1]
 
     # Сохраняем.
