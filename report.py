@@ -4,9 +4,11 @@ import matplotlib.pyplot as plt
 from io import BytesIO
 
 
+from config import COMPANY_NAME
+
 def create_report_word(figure: plt.figure,
                        report_name: str ='report1',
-                       company_name: str = 'company_name',
+                       company_name: str = COMPANY_NAME,
                        date_report: str = 'date_report',
                        name_product: str = 'name_product',
                        numer_batch: str = 'numer_batch'

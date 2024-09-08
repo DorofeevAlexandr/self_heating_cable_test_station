@@ -1,9 +1,11 @@
 import time
 from threading import Thread, Lock
 from pyModbusTCP.client import ModbusClient
+
+from config import IP_PLC
 import hmi_parameters
 
-SERVER_HOST = '192.168.1.1'
+SERVER_HOST = IP_PLC
 SERVER_PORT = 502
 
 # set global

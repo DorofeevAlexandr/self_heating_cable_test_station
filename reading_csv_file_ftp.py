@@ -1,8 +1,10 @@
 from ftplib import FTP
 
+from config import IP_PLC, PLC_USERNAME, PLC_PASSWORD
+
 
 class CsvFileReader:
-    def __init__(self, year=2021, month=8, day=9, host='192.168.1.1', username='Administrator', password='12345'):
+    def __init__(self, year=2021, month=8, day=9, host=IP_PLC, username=PLC_USERNAME, password=PLC_PASSWORD):
         self.year = year
         self.month = month
         self.day = day
