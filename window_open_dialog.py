@@ -2,6 +2,8 @@ from report import create_report_word
 import tkinter as tk
 from reading_csv_file_ftp import CsvFileReader
 import charts
+import os
+from config import BASE_DIR
 
 
 class FrameOpenFile(tk.LabelFrame):
@@ -9,12 +11,14 @@ class FrameOpenFile(tk.LabelFrame):
         tk.LabelFrame.__init__(self, parent)
         self.pack(fill=tk.BOTH)
 
-        self.label = tk.Label(self, text='/sd0/')
+        self.label = tk.Label(self, text='Выбор источника загрузки')
         self.label.pack(side=tk.TOP, fill=tk.Y, anchor=tk.NW)
 
         self.box = tk.Listbox(self, selectmode=tk.SINGLE, width=50, height=30)
         self.box.pack(side=tk.LEFT, fill=tk.Y)
         self.box.insert(tk.END, '[**]')
+        self.box.insert(tk.END, '[PLC]')
+        self.box.insert(tk.END, '[data_base]')
         self.box.bind('<Double-Button-1>', self.open_sub_folder)
         self.scroll = tk.Scrollbar(self, command=self.box.yview)
         self.scroll.pack(side=tk.LEFT, fill=tk.Y)
@@ -31,6 +35,9 @@ class FrameOpenFile(tk.LabelFrame):
         self.frm_chart.pack(side=tk.LEFT, anchor=tk.SE, fill=tk.BOTH)
         self.frm_chart.open_chart('Sample1_2021_11_16__16_16_51_kab_nomer.csv')
 
+        self.download_source = ''
+        self.select_folder = ''
+
     def create_report(self):
         create_report_word(self.frm_chart.figure_1)
 
@@ -43,8 +50,11 @@ class FrameOpenFile(tk.LabelFrame):
                 self.box.insert(tk.END, folder)
             self.label['text'] = csv_reader.get_path()
 
-    def open_sub_folder(self, event):
+    def open_sub_folder_plc(self):
         select = list(self.box.curselection())[0]
+        if select == 0 and self.box.get(select) == '[**]' and self.label['text'] == '/sd0/':
+            self.init_select_download_source()
+            return None
         if select == 0 and self.label['text'].rfind('/') != -1:
             path = self.label['text'][0:self.label['text'].rfind('/')] + '/'
             if path == '/':
@@ -67,6 +77,57 @@ class FrameOpenFile(tk.LabelFrame):
                 csv_reader.open_file(file_name)
                 self.frm_chart.open_chart(file_name)
         return file_name
+
+    def open_sub_folder(self, event):
+        select = list(self.box.curselection())[0]
+        if self.download_source == '':
+            if self.box.get(select) == '[data_base]':
+                self.download_source = 'PC'
+                self.update_list_dir_in_box(f_name='data_base')
+            if self.box.get(select) == '[PLC]':
+                self.download_source = 'PLC'
+                self.label['text'] = '/sd0/'
+                self.clear_box(self.box)
+        elif self.download_source == 'PLC':
+            self.open_sub_folder_plc()
+        elif self.download_source == 'PC':
+            self.open_sub_folder_pc()
+
+    def update_list_dir_in_box(self, f_name=''):
+        self.clear_box(self.box)
+        path = os.path.join(BASE_DIR, self.select_folder, f_name)
+        folders = os.listdir(path)
+        for f in folders:
+            self.box.insert(tk.END, f)
+        self.select_folder = os.path.relpath(path, start=BASE_DIR)
+        self.label['text'] = self.select_folder
+
+    def init_select_download_source(self):
+        self.clear_box(self.box)
+        self.download_source = ''
+        self.box.insert(tk.END, '[PLC]')
+        self.box.insert(tk.END, '[data_base]')
+        self.label['text'] = 'Выбор источника загрузки'
+
+    def clear_box(self, box):
+        for _ in range(1, self.box.size()):
+            box.delete(1)
+
+    def open_sub_folder_pc(self):
+        select = list(self.box.curselection())[0]
+        if select == 0 and self.box.get(select) == '[**]':
+            self.select_folder = os.path.split(self.select_folder)[0]
+            if self.select_folder == '':
+                self.init_select_download_source()
+            else:
+                self.update_list_dir_in_box(f_name='')
+        elif select != 0 and self.box.get(select).find('.csv') == -1:
+            self.update_list_dir_in_box(f_name=self.box.get(select))
+        elif select != 0 and self.box.get(select).find('.csv') != -1:
+            file_name = self.box.get(select)
+            path = os.path.join(BASE_DIR, self.select_folder, file_name)
+            self.frm_chart.open_chart(path)
+
 
 
 if __name__ == '__main__':
