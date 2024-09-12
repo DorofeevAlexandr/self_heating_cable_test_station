@@ -33,7 +33,7 @@ class FrameOpenFile(tk.LabelFrame):
         self.frm_chart = charts.FrameShowCharts(self)
         self.frm_chart['text'] = 'График'
         self.frm_chart.pack(side=tk.LEFT, anchor=tk.SE, fill=tk.BOTH)
-        self.frm_chart.open_chart('Sample1_2021_11_16__16_16_51_kab_nomer.csv')
+        # self.frm_chart.open_chart('Sample1_2021_11_16__16_16_51_kab_nomer.csv')
 
         self.download_source = ''
         self.select_folder = ''
