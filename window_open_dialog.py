@@ -5,6 +5,8 @@ import charts
 import os
 from config import BASE_DIR
 
+from additional_information_files import open_additional_information
+
 
 class FrameOpenFile(tk.LabelFrame):
     def __init__(self, parent=None):
@@ -37,6 +39,7 @@ class FrameOpenFile(tk.LabelFrame):
 
         self.download_source = ''
         self.select_folder = ''
+        self.sample = {}
 
     def create_report(self):
         create_report_word(self.frm_chart.figure_1)
@@ -121,13 +124,35 @@ class FrameOpenFile(tk.LabelFrame):
                 self.init_select_download_source()
             else:
                 self.update_list_dir_in_box(f_name='')
-        elif select != 0 and self.box.get(select).find('.csv') == -1:
+        elif (select != 0 and self.box.get(select).find('.csv') == -1 and
+                self.box.get(select).find('.json') == -1):
             self.update_list_dir_in_box(f_name=self.box.get(select))
-        elif select != 0 and self.box.get(select).find('.csv') != -1:
+        elif select != 0 and (self.box.get(select).find('.csv') != -1 or
+                              self.box.get(select).find('.json') != -1):
             file_name = self.box.get(select)
             path = os.path.join(BASE_DIR, self.select_folder, file_name)
-            self.frm_chart.open_chart(path)
+            self.open_arhives(path)
 
+    def open_arhives(self, path):
+        if os.path.splitext(path)[1] == '.csv':
+            self.frm_chart.open_chart(path)
+        elif os.path.splitext(path)[1] == '.json':
+            self.sample = open_additional_information(path)
+            try:
+                file_name = self.sample['s_csv_file_name']
+                print(file_name)
+                pc_path = os.path.split(path)[0]
+                print(pc_path)
+                ftp_path = '/sd0/'
+                print(ftp_path)
+                with CsvFileReader() as csv_reader:
+                    csv_reader.copy_file(ftp_path=ftp_path,
+                                         file_name=file_name,
+                                         pc_path=pc_path)
+                    csv_reader.open_file(os.path.join(pc_path + file_name))
+                    self.frm_chart.open_chart(os.path.join(pc_path + file_name))
+            except Exception as e:
+                print(e)
 
 
 if __name__ == '__main__':

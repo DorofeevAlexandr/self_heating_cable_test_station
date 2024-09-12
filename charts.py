@@ -40,7 +40,7 @@ class FrameShowCharts(tk.LabelFrame):
         self.canvas.get_tk_widget().place(x=-125, y=0, width=1800, height=1050)
 
     def open_chart(self, file_name):
-        #self.figure_1.suptitle(file_name)
+        self.figure_1.suptitle(file_name)
         dates = []
         values_1 = []
         values_2 = []

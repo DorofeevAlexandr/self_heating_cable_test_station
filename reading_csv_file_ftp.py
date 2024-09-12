@@ -1,6 +1,7 @@
 from ftplib import FTP
 
 from config import IP_PLC, PLC_USERNAME, PLC_PASSWORD
+import os
 
 
 class CsvFileReader:
@@ -34,9 +35,9 @@ class CsvFileReader:
         print(result)
         return result
 
-    def copy_file(self,path, file_name):
-        self.ftp.cwd(path)
-        my_file = open(file_name, 'wb')
+    def copy_file(self, ftp_path, file_name, pc_path=''):
+        self.ftp.cwd(ftp_path)
+        my_file = open(os.path.join(pc_path + file_name), 'wb')
         self.ftp.retrbinary('RETR ' + file_name, my_file.write, 1024)
         my_file.close()
 
