@@ -6,12 +6,11 @@ from io import BytesIO
 
 from config import COMPANY_NAME
 
+
 def create_report_word(figure: plt.figure,
+                       data: dict,
                        report_name: str ='report1',
                        company_name: str = COMPANY_NAME,
-                       date_report: str = 'date_report',
-                       name_product: str = 'name_product',
-                       numer_batch: str = 'numer_batch'
                        ):
     doc = docx.Document()
 
@@ -19,9 +18,10 @@ def create_report_word(figure: plt.figure,
     #doc.add_heading('Отчёт', 1).alignment = WD_ALIGN_PARAGRAPH.CENTER
     doc.add_heading('Испытание саморегулирующегося нагревательного кабеля',
                     1).alignment = WD_ALIGN_PARAGRAPH.CENTER
-    par1 = doc.add_paragraph(f'Дата - {date_report}')
-    par1.add_run(f'\nНаименование - {name_product}')
-    par1.add_run(f'\n№ партии - {numer_batch}')
+    par1 = doc.add_paragraph(f'Дата - {data.get("s_TimePuskTest", "_")}')
+    par1.add_run(f'\nФамилия испытателя - {data.get("s_FamilyTester", "Family")}')
+    par1.add_run(f'\nНаименование - {data.get("s_KableBrandTest", "Name_product")}')
+    par1.add_run(f'\n№ партии - {data.get("s_BatchNumberTest", "0")}')
 
     image = BytesIO()
     extent = figure.get_window_extent().transformed(figure.dpi_scale_trans.inverted())

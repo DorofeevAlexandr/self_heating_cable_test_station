@@ -42,7 +42,8 @@ class FrameOpenFile(tk.LabelFrame):
         self.sample = {}
 
     def create_report(self):
-        create_report_word(self.frm_chart.figure_1)
+        create_report_word(self.frm_chart.figure_1,
+                           data=self.sample)
 
     def open_folder(self, path='/sd0/'):
         for i in range(1, self.box.size()):
