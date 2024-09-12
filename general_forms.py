@@ -5,6 +5,8 @@ import control_plc as c_plc
 from tkinter import ttk
 import datetime as dt
 
+from additional_information_files import save_additional_information
+
 WIDTH_1 = 15
 WIDTH_2 = 25
 
@@ -129,9 +131,9 @@ class FrameCurrentParams(tk.LabelFrame):
         self.entry_family_tester_1 = tk.Entry(self, width=WIDTH_2, textvariable=self.family_tester_1)
         self.label_family_tester_1.grid(row=1, column=0, sticky="e")
         self.entry_family_tester_1.grid(row=1, column=1)
-        self.entry_family_tester_1.bind('<Return>', (
-            lambda event: write_value(self.entry_family_tester_1, 's_FamilyTester_1')))
-        self.entry_family_tester_1.bind('<Key>', (lambda event: set_skipp_update()))
+        # self.entry_family_tester_1.bind('<Return>', (
+        #     lambda event: write_value(self.entry_family_tester_1, 's_FamilyTester_1')))
+        # self.entry_family_tester_1.bind('<Key>', (lambda event: set_skipp_update()))
 
         self.time_read_frompc = tk.StringVar()
         self.label_time_read_frompc = tk.Label(self, text='Время в ПЛК')
@@ -170,7 +172,7 @@ class FrameCurrentParams(tk.LabelFrame):
         c_plc.parameters.p['w_RegControl_1'].en_write = True
 
     def update_values_of_entry(self):
-        self.family_tester_1.set(str(c_plc.parameters.p['s_FamilyTester_1'].value))
+        # self.family_tester_1.set(str(c_plc.parameters.p['s_FamilyTester_1'].value))
         self.time_read_frompc.set(str(c_plc.parameters.p['s_TimeReadFromPC'].value)[8:16])
         self.date_read_frompc.set(str(c_plc.parameters.p['s_TimeReadFromPC'].value)[0:8])
         self.voltage_testing.set(str('%.1f' % c_plc.parameters.p['r_VoltageTesting'].value))
@@ -497,7 +499,7 @@ class FrameTechnologicalScheme(tk.LabelFrame):
         self.label_status_test_1.config(font=("Times", "40", "bold"), bg="White")
         self.label_status_test_1.place(x=x0_zone1, y=y0_zone1+300)
 
-        self.button_start_test_1 = tk.Button(self, text="Пуск", command=lambda: self.set_bit_control_word(4))
+        self.button_start_test_1 = tk.Button(self, text="Пуск", command=lambda: self.pusk_measurement(1, 4))
         self.button_start_test_1.config(font=("Times", "20", "bold"), bg="Green")
         self.button_start_test_1.place(x=x0_zone1, y=y0_zone1 + 380)
         self.button_stop_test_1 = tk.Button(self, text="Стоп", command=lambda: self.set_bit_control_word(5))
@@ -527,7 +529,7 @@ class FrameTechnologicalScheme(tk.LabelFrame):
         self.label_status_test_2.config(font=("Times", "40", "bold"), bg="White")
         self.label_status_test_2.place(x=x0_zone1+zone_width, y=y0_zone1 + 300)
 
-        self.button_start_test_2 = tk.Button(self, text="Пуск", command=lambda: self.set_bit_control_word(7))
+        self.button_start_test_2 = tk.Button(self, text="Пуск", command=lambda: self.pusk_measurement(2, 7))
         self.button_start_test_2.config(font=("Times", "20", "bold"), bg="Green")
         self.button_start_test_2.place(x=x0_zone1+zone_width, y=y0_zone1 + 380)
         self.button_stop_test_2 = tk.Button(self, text="Стоп", command=lambda: self.set_bit_control_word(8))
@@ -557,12 +559,16 @@ class FrameTechnologicalScheme(tk.LabelFrame):
         self.label_status_test_3.config(font=("Times", "40", "bold"), bg="White")
         self.label_status_test_3.place(x=x0_zone1+2*zone_width, y=y0_zone1 + 300)
 
-        self.button_start_test_3 = tk.Button(self, text="Пуск", command=lambda: self.set_bit_control_word(10))
+        self.button_start_test_3 = tk.Button(self, text="Пуск", command=lambda: self.pusk_measurement(3, 10))
         self.button_start_test_3.config(font=("Times", "20", "bold"), bg="Green")
         self.button_start_test_3.place(x=x0_zone1+2*zone_width, y=y0_zone1 + 380)
         self.button_stop_test_3 = tk.Button(self, text="Стоп", command=lambda: self.set_bit_control_word(11))
         self.button_stop_test_3.config(font=("Times", "20", "bold"), bg="Red")
         self.button_stop_test_3.place(x=x0_zone1+zone_width//3+2*zone_width, y=y0_zone1+380)
+
+    def pusk_measurement(self, zone_num: int, bit_num: int):
+        if self.set_bit_control_word(bit_num):
+            saving_parameters_at_start(sample_num=zone_num)
 
     def set_bit_control_word(self, pos):
         message = "Подтвердите операцию"
@@ -570,6 +576,7 @@ class FrameTechnologicalScheme(tk.LabelFrame):
             w_reg_control_1 = c_plc.parameters.p['w_RegControl_1'].value
             c_plc.parameters.p['w_RegControl_1'].write_value = set_kth_bit(w_reg_control_1, pos)
             c_plc.parameters.p['w_RegControl_1'].en_write = True
+            return True
 
     def update_values(self):
         self.label_voltage_testing_val['text'] = str('%.1f' % c_plc.parameters.p['r_VoltageTesting'].value) + ' V'
@@ -620,6 +627,21 @@ class FrameTechnologicalScheme(tk.LabelFrame):
         else:
             label['text'] = ''
             label.config(bg="White")
+
+
+def saving_parameters_at_start(sample_num: int):
+    additional_information = {
+        'w_sample_num': sample_num,
+        's_TimePuskTest': '',
+        's_TimeStartTest': '',
+        's_FamilyTester': frm_cur_pars.entry_family_tester_1.get(),
+        's_KableBrandTest': 'KableBrand',
+        's_BatchNumberTest': 'BatchNumber',
+        'r_TempStartTest': 0,
+        'w_ExpTimeTest': 0,
+        'w_LenTimeTest': 0,
+    }
+    save_additional_information(sample=additional_information)
 
 
 # Создается новое окно с заголовком.

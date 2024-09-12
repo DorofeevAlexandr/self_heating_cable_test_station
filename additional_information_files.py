@@ -13,7 +13,7 @@ def open_additional_information(file_name:str):
 def save_additional_information(sample):
     sample["s_csv_file_name"] = (f'Sample{str(sample["w_sample_num"])}_{st_time()}.csv')
     file_name = create_dir(sample)
-    with open(file_name, 'w') as outfile:
+    with open(file_name, 'w', encoding="utf-8") as outfile:
         json.dump(sample, outfile)
 
 def st_time()->str:
@@ -31,7 +31,7 @@ def create_dir(sample):
     year = str(dt.year)
     month = str(dt.month)
     file_name = (f'Образец{str(sample["w_sample_num"])}_{st_time()}_'
-                f'{sample["s_KableBrandTest"]}_{sample["s_BatchNumberTest"]}.json')
+                 f'{sample["s_KableBrandTest"]}_{sample["s_BatchNumberTest"]}.json')
     path = os.path.join(BASE_DIR, 'data_base', year, month)
     file_name = os.path.join(path, file_name)
     if not os.path.isdir(path):
