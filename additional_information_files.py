@@ -1,22 +1,25 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
 import json
 
 from config import BASE_DIR
 
 
-def open_additional_information(file_name:str):
+def open_additional_information(file_name: str):
     with open(file_name, 'r') as json_file:
         data = json.load(json_file)
     return data
 
+
 def save_additional_information(sample):
-    sample["s_csv_file_name"] = (f'Sample{str(sample["w_sample_num"])}_{st_time()}.csv')
+    sample["s_csv_file_name"] = f'Sample{str(sample["w_sample_num"])}_{st_time()}.csv'
+    sample["s_TimePuskTest"] = st_time()
     file_name = create_dir(sample)
     with open(file_name, 'w', encoding="utf-8") as outfile:
         json.dump(sample, outfile)
 
-def st_time()->str:
+
+def st_time() -> str:
     dt = datetime.now()
     year = str(dt.year)
     month = str(dt.month)
@@ -25,6 +28,7 @@ def st_time()->str:
     minute = str(dt.minute)
     second = str(dt.second)
     return f'{year}_{month}_{day}__{hour}_{minute}_{second}'
+
 
 def create_dir(sample):
     dt = datetime.now()
@@ -50,7 +54,7 @@ if __name__ == '__main__':
                 'r_TempStartTest': 0,
                 'w_ExpTimeTest': 0,
                 'w_LenTimeTest': 0,
-    }    
+                }
 
     save_additional_information(sample=sample_1)
     open_additional_information('data.json')

@@ -190,18 +190,18 @@ class FrameCurrentParamsUnit1(tk.LabelFrame):
         self.entry_kable_brand_test_1 = tk.Entry(self, width=WIDTH_2, textvariable=self.kable_brand_test_1)
         self.label_kable_brand_test_1.grid(row=1, column=0, sticky="e")
         self.entry_kable_brand_test_1.grid(row=1, column=1)
-        self.entry_kable_brand_test_1.bind('<Return>', (
-            lambda event: write_value(self.entry_kable_brand_test_1, 's_KableBrandTest_1')))
-        self.entry_kable_brand_test_1.bind('<Key>', (lambda event: set_skipp_update()))
+        # self.entry_kable_brand_test_1.bind('<Return>', (
+        #     lambda event: write_value(self.entry_kable_brand_test_1, 's_KableBrandTest_1')))
+        # self.entry_kable_brand_test_1.bind('<Key>', (lambda event: set_skipp_update()))
 
         self.batch_number_test_1 = tk.StringVar()
         self.label_batch_number_test_1 = tk.Label(self, text='Номер партии испытания 1')
         self.entry_batch_number_test_1 = tk.Entry(self, width=WIDTH_2, textvariable=self.batch_number_test_1)
         self.label_batch_number_test_1.grid(row=2, column=0, sticky="e")
         self.entry_batch_number_test_1.grid(row=2, column=1)
-        self.entry_batch_number_test_1.bind('<Return>', (
-            lambda event: write_value(self.entry_batch_number_test_1, 's_BatchNumberTest_1')))
-        self.entry_batch_number_test_1.bind('<Key>', (lambda event: set_skipp_update()))
+        # self.entry_batch_number_test_1.bind('<Return>', (
+        #     lambda event: write_value(self.entry_batch_number_test_1, 's_BatchNumberTest_1')))
+        # self.entry_batch_number_test_1.bind('<Key>', (lambda event: set_skipp_update()))
 
         self.temp_start_test_1 = tk.StringVar()
         self.label_temp_start_test_1 = tk.Label(self, text='Температура начала испытания 1, гр. С')
@@ -255,8 +255,8 @@ class FrameCurrentParamsUnit1(tk.LabelFrame):
         self.entry_temp_test_1.grid(row=10, column=1)
 
     def update_values_of_entry(self):
-        self.kable_brand_test_1.set(str(c_plc.parameters.p['s_KableBrandTest_1'].value))
-        self.batch_number_test_1.set(str(c_plc.parameters.p['s_BatchNumberTest_1'].value))
+        # self.kable_brand_test_1.set(str(c_plc.parameters.p['s_KableBrandTest_1'].value))
+        # self.batch_number_test_1.set(str(c_plc.parameters.p['s_BatchNumberTest_1'].value))
         self.temp_start_test_1.set(str('%.1f' % c_plc.parameters.p['r_TempStartTest_1'].value))
         self.exp_time_test_1.set(str(c_plc.parameters.p['w_ExpTimeTest_1'].value))
         self.len_time_test_1.set(str(c_plc.parameters.p['w_LenTimeTest_1'].value))
@@ -276,18 +276,18 @@ class FrameCurrentParamsUnit2(tk.LabelFrame):
         self.entry_kable_brand_test_2 = tk.Entry(self, width=WIDTH_2, textvariable=self.kable_brand_test_2)
         self.label_kable_brand_test_2.grid(row=1, column=0, sticky="e")
         self.entry_kable_brand_test_2.grid(row=1, column=1)
-        self.entry_kable_brand_test_2.bind('<Return>', (
-            lambda event: write_value(self.entry_kable_brand_test_2, 's_KableBrandTest_2')))
-        self.entry_kable_brand_test_2.bind('<Key>', (lambda event: set_skipp_update()))
+        # self.entry_kable_brand_test_2.bind('<Return>', (
+        #     lambda event: write_value(self.entry_kable_brand_test_2, 's_KableBrandTest_2')))
+        # self.entry_kable_brand_test_2.bind('<Key>', (lambda event: set_skipp_update()))
 
         self.batch_number_test_2 = tk.StringVar()
         self.label_batch_number_test_2 = tk.Label(self, text='Номер партии испытания 2')
         self.entry_batch_number_test_2 = tk.Entry(self, width=WIDTH_2, textvariable=self.batch_number_test_2)
         self.label_batch_number_test_2.grid(row=2, column=0, sticky="e")
         self.entry_batch_number_test_2.grid(row=2, column=1)
-        self.entry_batch_number_test_2.bind('<Return>', (
-            lambda event: write_value(self.entry_batch_number_test_2, 's_BatchNumberTest_2')))
-        self.entry_batch_number_test_2.bind('<Key>', (lambda event: set_skipp_update()))
+        # self.entry_batch_number_test_2.bind('<Return>', (
+        #     lambda event: write_value(self.entry_batch_number_test_2, 's_BatchNumberTest_2')))
+        # self.entry_batch_number_test_2.bind('<Key>', (lambda event: set_skipp_update()))
 
         self.temp_start_test_2 = tk.StringVar()
         self.label_temp_start_test_2 = tk.Label(self, text='Температура начала испытания 2, гр. С')
@@ -341,8 +341,8 @@ class FrameCurrentParamsUnit2(tk.LabelFrame):
         self.entry_temp_test_2.grid(row=10, column=1)
 
     def update_values_of_entry(self):
-        self.kable_brand_test_2.set(str(c_plc.parameters.p['s_KableBrandTest_2'].value))
-        self.batch_number_test_2.set(str(c_plc.parameters.p['s_BatchNumberTest_2'].value))
+        # self.kable_brand_test_2.set(str(c_plc.parameters.p['s_KableBrandTest_2'].value))
+        # self.batch_number_test_2.set(str(c_plc.parameters.p['s_BatchNumberTest_2'].value))
         self.temp_start_test_2.set(str('%.1f' % c_plc.parameters.p['r_TempStartTest_2'].value))
         self.exp_time_test_2.set(str(c_plc.parameters.p['w_ExpTimeTest_2'].value))
         self.len_time_test_2.set(str(c_plc.parameters.p['w_LenTimeTest_2'].value))
@@ -362,18 +362,18 @@ class FrameCurrentParamsUnit3(tk.LabelFrame):
         self.entry_kable_brand_test_3 = tk.Entry(self, width=WIDTH_2, textvariable=self.kable_brand_test_3)
         self.label_kable_brand_test_3.grid(row=1, column=0, sticky="e")
         self.entry_kable_brand_test_3.grid(row=1, column=1)
-        self.entry_kable_brand_test_3.bind('<Return>', (
-            lambda event: write_value(self.entry_kable_brand_test_3, 's_KableBrandTest_3')))
-        self.entry_kable_brand_test_3.bind('<Key>', (lambda event: set_skipp_update()))
+        # self.entry_kable_brand_test_3.bind('<Return>', (
+        #     lambda event: write_value(self.entry_kable_brand_test_3, 's_KableBrandTest_3')))
+        # self.entry_kable_brand_test_3.bind('<Key>', (lambda event: set_skipp_update()))
 
         self.batch_number_test_3 = tk.StringVar()
         self.label_batch_number_test_3 = tk.Label(self, text='Номер партии испытания 3')
         self.entry_batch_number_test_3 = tk.Entry(self, width=WIDTH_2, textvariable=self.batch_number_test_3)
         self.label_batch_number_test_3.grid(row=2, column=0, sticky="e")
         self.entry_batch_number_test_3.grid(row=2, column=1)
-        self.entry_batch_number_test_3.bind('<Return>', (
-            lambda event: write_value(self.entry_batch_number_test_3, 's_BatchNumberTest_3')))
-        self.entry_batch_number_test_3.bind('<Key>', (lambda event: set_skipp_update()))
+        # self.entry_batch_number_test_3.bind('<Return>', (
+        #     lambda event: write_value(self.entry_batch_number_test_3, 's_BatchNumberTest_3')))
+        # self.entry_batch_number_test_3.bind('<Key>', (lambda event: set_skipp_update()))
 
         self.temp_start_test_3 = tk.StringVar()
         self.label_temp_start_test_3 = tk.Label(self, text='Температура начала испытания 3, гр. С')
@@ -427,8 +427,8 @@ class FrameCurrentParamsUnit3(tk.LabelFrame):
         self.entry_temp_test_3.grid(row=10, column=1)
 
     def update_values_of_entry(self):
-        self.kable_brand_test_3.set(str(c_plc.parameters.p['s_KableBrandTest_3'].value))
-        self.batch_number_test_3.set(str(c_plc.parameters.p['s_BatchNumberTest_3'].value))
+        # self.kable_brand_test_3.set(str(c_plc.parameters.p['s_KableBrandTest_3'].value))
+        # self.batch_number_test_3.set(str(c_plc.parameters.p['s_BatchNumberTest_3'].value))
         self.temp_start_test_3.set(str('%.1f' % c_plc.parameters.p['r_TempStartTest_3'].value))
         self.exp_time_test_3.set(str(c_plc.parameters.p['w_ExpTimeTest_3'].value))
         self.len_time_test_3.set(str(c_plc.parameters.p['w_LenTimeTest_3'].value))
@@ -630,17 +630,27 @@ class FrameTechnologicalScheme(tk.LabelFrame):
 
 
 def saving_parameters_at_start(sample_num: int):
-    additional_information = {
-        'w_sample_num': sample_num,
-        's_TimePuskTest': '',
-        's_TimeStartTest': '',
-        's_FamilyTester': frm_cur_pars.entry_family_tester_1.get(),
-        's_KableBrandTest': 'KableBrand',
-        's_BatchNumberTest': 'BatchNumber',
-        'r_TempStartTest': 0,
-        'w_ExpTimeTest': 0,
-        'w_LenTimeTest': 0,
-    }
+    additional_information = {'w_sample_num': sample_num,
+                              's_FamilyTester': frm_cur_pars.entry_family_tester_1.get()
+                              }
+    if sample_num == 1:
+        additional_information['s_KableBrandTest'] = frm_cur_pars_unit_1.entry_kable_brand_test_1.get()
+        additional_information['s_BatchNumberTest'] = frm_cur_pars_unit_1.entry_batch_number_test_1.get()
+        additional_information['r_TempStartTest'] = frm_cur_pars_unit_1.entry_temp_start_test_1.get()
+        additional_information['w_ExpTimeTest'] = frm_cur_pars_unit_1.entry_exp_time_test_1.get()
+        additional_information['w_LenTimeTest'] = frm_cur_pars_unit_1.entry_len_time_test_1.get()
+    elif sample_num == 2:
+        additional_information['s_KableBrandTest'] = frm_cur_pars_unit_2.entry_kable_brand_test_2.get()
+        additional_information['s_BatchNumberTest'] = frm_cur_pars_unit_2.entry_batch_number_test_2.get()
+        additional_information['r_TempStartTest'] = frm_cur_pars_unit_2.entry_temp_start_test_2.get()
+        additional_information['w_ExpTimeTest'] = frm_cur_pars_unit_2.entry_exp_time_test_2.get()
+        additional_information['w_LenTimeTest'] = frm_cur_pars_unit_2.entry_len_time_test_2.get()
+    elif sample_num == 3:
+        additional_information['s_KableBrandTest'] = frm_cur_pars_unit_3.entry_kable_brand_test_3.get()
+        additional_information['s_BatchNumberTest'] = frm_cur_pars_unit_3.entry_batch_number_test_3.get()
+        additional_information['r_TempStartTest'] = frm_cur_pars_unit_3.entry_temp_start_test_3.get()
+        additional_information['w_ExpTimeTest'] = frm_cur_pars_unit_3.entry_exp_time_test_3.get()
+        additional_information['w_LenTimeTest'] = frm_cur_pars_unit_3.entry_len_time_test_3.get()
     save_additional_information(sample=additional_information)
 
 
