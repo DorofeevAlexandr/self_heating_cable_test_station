@@ -213,7 +213,7 @@ class FrameCurrentParamsUnit1(tk.LabelFrame):
         self.entry_temp_start_test_1.bind('<Key>', (lambda event: set_skipp_update()))
 
         self.exp_time_test_1 = tk.StringVar()
-        self.label_exp_time_test_1 = tk.Label(self, text='Время выдержки испытания 1, мин.')
+        self.label_exp_time_test_1 = tk.Label(self, text='Время выдержки испытания 1, c.')
         self.entry_exp_time_test_1 = tk.Entry(self, width=WIDTH_1, textvariable=self.exp_time_test_1)
         self.label_exp_time_test_1.grid(row=4, column=0, sticky="e")
         self.entry_exp_time_test_1.grid(row=4, column=1)
@@ -299,7 +299,7 @@ class FrameCurrentParamsUnit2(tk.LabelFrame):
         self.entry_temp_start_test_2.bind('<Key>', (lambda event: set_skipp_update()))
 
         self.exp_time_test_2 = tk.StringVar()
-        self.label_exp_time_test_2 = tk.Label(self, text='Время выдержки испытания 2, мин.')
+        self.label_exp_time_test_2 = tk.Label(self, text='Время выдержки испытания 2, c.')
         self.entry_exp_time_test_2 = tk.Entry(self, width=WIDTH_1, textvariable=self.exp_time_test_2)
         self.label_exp_time_test_2.grid(row=4, column=0, sticky="e")
         self.entry_exp_time_test_2.grid(row=4, column=1)
@@ -385,7 +385,7 @@ class FrameCurrentParamsUnit3(tk.LabelFrame):
         self.entry_temp_start_test_3.bind('<Key>', (lambda event: set_skipp_update()))
 
         self.exp_time_test_3 = tk.StringVar()
-        self.label_exp_time_test_3 = tk.Label(self, text='Время выдержки испытания 3, мин.')
+        self.label_exp_time_test_3 = tk.Label(self, text='Время выдержки испытания 3, c.')
         self.entry_exp_time_test_3 = tk.Entry(self, width=WIDTH_1, textvariable=self.exp_time_test_3)
         self.label_exp_time_test_3.grid(row=4, column=0, sticky="e")
         self.entry_exp_time_test_3.grid(row=4, column=1)
