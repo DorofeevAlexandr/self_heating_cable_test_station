@@ -65,7 +65,7 @@ class FrameOpenFile(tk.LabelFrame):
 
     def open_sub_folder_plc(self):
         select = list(self.box.curselection())[0]
-        if select == 0 and self.box.get(select) == '[**]' and self.label['text'] == '/sd0/':
+        if select == 0 and self.box.get(select) == '[**]' and self.label['text'] == '/sd0':
             self.init_select_download_source()
             return None
         if select == 0 and self.label['text'].rfind('/') != -1:
@@ -99,8 +99,9 @@ class FrameOpenFile(tk.LabelFrame):
                 self.update_list_dir_in_box(f_name='data_base')
             if self.box.get(select) == '[PLC]':
                 self.download_source = 'PLC'
-                self.label['text'] = '/sd0/'
+                self.label['text'] = ''
                 self.clear_box(self.box)
+                self.open_folder('/sd0/')
         elif self.download_source == 'PLC':
             self.open_sub_folder_plc()
         elif self.download_source == 'PC':
