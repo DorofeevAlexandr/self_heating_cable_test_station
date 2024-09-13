@@ -9,7 +9,7 @@ from config import COMPANY_NAME
 
 def create_report_word(figure: plt.figure,
                        data: dict,
-                       report_name: str ='report1',
+                       report_filename: str ='report',
                        company_name: str = COMPANY_NAME,
                        ):
     doc = docx.Document()
@@ -19,9 +19,9 @@ def create_report_word(figure: plt.figure,
     doc.add_heading('Испытание саморегулирующегося нагревательного кабеля',
                     1).alignment = WD_ALIGN_PARAGRAPH.CENTER
     par1 = doc.add_paragraph(f'Дата - {data.get("s_TimePuskTest", "_")}')
-    par1.add_run(f'\nФамилия испытателя - {data.get("s_FamilyTester", "Family")}')
-    par1.add_run(f'\nНаименование - {data.get("s_KableBrandTest", "Name_product")}')
-    par1.add_run(f'\n№ партии - {data.get("s_BatchNumberTest", "0")}')
+    par1.add_run(f'\nФамилия испытателя - {data.get("s_FamilyTester", "_")}')
+    par1.add_run(f'\nНаименование - {data.get("s_KableBrandTest", "_")}')
+    par1.add_run(f'\n№ партии - {data.get("s_BatchNumberTest", "_")}')
 
     image = BytesIO()
     extent = figure.get_window_extent().transformed(figure.dpi_scale_trans.inverted())
@@ -34,4 +34,4 @@ def create_report_word(figure: plt.figure,
     #pic.alignment = WD_ALIGN_PARAGRAPH.CENTER
     #pic.left_indent = docx.shared.Cm(105)
     #docx.enum.text.WD_PARAGRAPH_ALIGNMENT.RIGHT
-    doc.save(report_name + '.docx')
+    doc.save(report_filename)

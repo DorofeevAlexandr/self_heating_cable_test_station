@@ -1,5 +1,6 @@
 from report import create_report_word
 import tkinter as tk
+from tkinter.filedialog import asksaveasfilename
 from reading_csv_file_ftp import CsvFileReader
 import charts
 import os
@@ -42,8 +43,16 @@ class FrameOpenFile(tk.LabelFrame):
         self.sample = {}
 
     def create_report(self):
+        filename = asksaveasfilename(title="Save File",
+                                     initialdir=BASE_DIR,
+                                     initialfile='Отчет ' + self.sample.get("s_TimePuskTest", ""),
+                                     defaultextension="",
+                                     filetypes=[('word', '.docx')])
+
+        print(filename)
         create_report_word(self.frm_chart.figure_1,
-                           data=self.sample)
+                           data=self.sample,
+                           report_filename=filename)
 
     def open_folder(self, path='/sd0/'):
         for i in range(1, self.box.size()):
