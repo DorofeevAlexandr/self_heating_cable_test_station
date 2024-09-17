@@ -60,7 +60,11 @@ class Parameters:
                     'w_RegStatus_1': Parameter('w_RegStatus_1', 540, 'WORD', 'Регистр статуса 1 '),
                     'w_RegStatus_2': Parameter('w_RegStatus_2', 541, 'WORD', 'Регистр статуса 2'),
                     'w_RegAlarm_1': Parameter('w_RegAlarm_1', 542, 'WORD', 'Регистр аварий 1 '),
-                    'w_RegAlarm_2': Parameter('w_RegAlarm_2', 543, 'WORD', 'Регистр аварий 2')}
+                    'w_RegAlarm_2': Parameter('w_RegAlarm_2', 543, 'WORD', 'Регистр аварий 2'),
+                    'w_revers_time_1': Parameter('w_revers_time_1', 544, 'WORD', 'Обратный отсчет 1'),
+                    'w_revers_time_2': Parameter('w_revers_time_2', 545, 'WORD', 'Обратный отсчет 2'),
+                    'w_revers_time_3': Parameter('w_revers_time_3', 546, 'WORD', 'Обратный отсчет 3'),
+                }
 
     def read_values(self, registers):
         for key in self.p:
