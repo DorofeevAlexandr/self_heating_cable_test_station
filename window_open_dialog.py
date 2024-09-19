@@ -154,14 +154,16 @@ class FrameOpenFile(tk.LabelFrame):
                 print(file_name)
                 pc_path = os.path.split(path)[0]
                 print(pc_path)
-                ftp_path = '/sd0/'
+                fn = file_name.split('_')
+                print(fn)
+                ftp_path = f'/sd0/{fn[1]}/{fn[2]}/'
                 print(ftp_path)
                 with CsvFileReader() as csv_reader:
                     csv_reader.copy_file(ftp_path=ftp_path,
                                          file_name=file_name,
                                          pc_path=pc_path)
-                    csv_reader.open_file(os.path.join(pc_path + file_name))
-                    self.frm_chart.open_chart(os.path.join(pc_path + file_name))
+                    csv_reader.open_file(os.path.join(pc_path, file_name))
+                    self.frm_chart.open_chart(os.path.join(pc_path, file_name))
             except Exception as e:
                 print(e)
 

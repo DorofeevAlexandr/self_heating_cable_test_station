@@ -37,7 +37,7 @@ class CsvFileReader:
 
     def copy_file(self, ftp_path, file_name, pc_path=''):
         self.ftp.cwd(ftp_path)
-        my_file = open(os.path.join(pc_path + file_name), 'wb')
+        my_file = open(os.path.join(pc_path, file_name), 'wb')
         self.ftp.retrbinary('RETR ' + file_name, my_file.write, 1024)
         my_file.close()
 
