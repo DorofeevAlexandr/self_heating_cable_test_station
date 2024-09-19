@@ -445,7 +445,7 @@ class FrameTechnologicalScheme(tk.LabelFrame):
 
         canvas = tk.Canvas(self)
         x0, y0 = 30, 100
-        tube_width, tube_height = 1090, 450
+        tube_width, tube_height = 1200, 450
         zone_width = tube_width // 3
         # Рисуем трубу
         canvas.create_rectangle(x0, y0, x0 + tube_width, y0 + tube_height, width=3)
@@ -603,9 +603,12 @@ class FrameTechnologicalScheme(tk.LabelFrame):
         self.label_power_test_2_val['text'] = str('%.1f' % power_2) + ' Вт'
         self.label_power_test_3_val['text'] = str('%.1f' % power_3) + ' Вт'
 
-        self.control_status(self.label_status_test_1, c_plc.parameters.p['w_RegStatus_1'].value, 0, 1, 2)
-        self.control_status(self.label_status_test_2, c_plc.parameters.p['w_RegStatus_1'].value, 3, 4, 5)
-        self.control_status(self.label_status_test_3, c_plc.parameters.p['w_RegStatus_1'].value, 6, 7, 8)
+        self.control_status(self.label_status_test_1, c_plc.parameters.p['w_RegStatus_1'].value, 0, 1, 2,
+                            revers_time=c_plc.parameters.p['w_revers_time_1'].value)
+        self.control_status(self.label_status_test_2, c_plc.parameters.p['w_RegStatus_1'].value, 3, 4, 5,
+                            revers_time=c_plc.parameters.p['w_revers_time_2'].value)
+        self.control_status(self.label_status_test_3, c_plc.parameters.p['w_RegStatus_1'].value, 6, 7, 8,
+                            revers_time=c_plc.parameters.p['w_revers_time_3'].value)
 
         '''st_start = str(c_plc.parameters.p['s_TimeStartTest_3'].value)[8, -1]
         try:
@@ -614,12 +617,12 @@ class FrameTechnologicalScheme(tk.LabelFrame):
             t_start = 0
         '''
 
-    def control_status(self, label, status_word, pos_1, pos_2, pos_3):
+    def control_status(self, label, status_word, pos_1, pos_2, pos_3, revers_time: int):
         if get_bit(status_word, pos_1):
-            label['text'] = 'Выдержка'
+            label['text'] = 'Выдержка - ' + str(revers_time) + 'с'
             label.config(bg="Yellow")
         elif get_bit(status_word, pos_2):
-            label['text'] = 'Испытание'
+            label['text'] = 'Испытание - ' + str(revers_time) + 'с'
             label.config(bg="Green")
         elif get_bit(status_word, pos_3):
             label['text'] = 'Завершено'
