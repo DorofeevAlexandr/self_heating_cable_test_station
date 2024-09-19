@@ -18,6 +18,7 @@ def save_additional_information(sample):
     file_name = create_dir(sample)
     with open(file_name, 'w', encoding="utf-8") as outfile:
         json.dump(sample, outfile)
+    return sample.get('s_csv_file_name')
 
 
 def st_time() -> str:

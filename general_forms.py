@@ -4,6 +4,7 @@ import window_open_dialog
 import control_plc as c_plc
 from tkinter import ttk
 import datetime as dt
+import os
 
 from additional_information_files import save_additional_information
 
@@ -654,7 +655,24 @@ def saving_parameters_at_start(sample_num: int):
         additional_information['r_TempStartTest'] = frm_cur_pars_unit_3.entry_temp_start_test_3.get()
         additional_information['w_ExpTimeTest'] = frm_cur_pars_unit_3.entry_exp_time_test_3.get()
         additional_information['w_LenTimeTest'] = frm_cur_pars_unit_3.entry_len_time_test_3.get()
-    save_additional_information(sample=additional_information)
+    csv_filename = save_additional_information(sample=additional_information)
+    write_csv_filename(sample_num, csv_filename)
+
+
+def write_csv_filename(sample_num, filename):
+    csv_filename = os.path.splitext(filename)[0]
+    if sample_num == 1:
+        write_parametr(key='s_FileNameTest_1', value=csv_filename[0:16])
+        write_parametr(key='s_FileNameTestEnd_1', value=csv_filename[16:])
+        print(csv_filename)
+        print(c_plc.parameters.p['s_FileNameTest_1'].value)
+        print(c_plc.parameters.p['s_FileNameTestEnd_1'].value)
+    elif sample_num == 2:
+        write_parametr(key='s_FileNameTest_2', value=csv_filename[0:16])
+        write_parametr(key='s_FileNameTestEnd_2', value=csv_filename[16:])
+    elif sample_num == 3:
+        write_parametr(key='s_FileNameTest_3', value=csv_filename[0:16])
+        write_parametr(key='s_FileNameTestEnd_3', value=csv_filename[16:])
 
 
 # Создается новое окно с заголовком.
@@ -739,6 +757,10 @@ def write_value(entry, key):
     global skipp_update
     skipp_update = 0
 
+
+def write_parametr(key, value):
+    c_plc.parameters.p[key].write_value = value
+    c_plc.parameters.p[key].en_write = True
 
 update()
 window.after(3000, update)
