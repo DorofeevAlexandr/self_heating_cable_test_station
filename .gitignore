@@ -11,6 +11,7 @@ config.py
 *.db
 *.csv
 *.exe
+*.spec
 build/
 dist/
 comands.txt
