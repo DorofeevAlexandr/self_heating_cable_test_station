@@ -446,7 +446,7 @@ class FrameTechnologicalScheme(tk.LabelFrame):
 
         canvas = tk.Canvas(self)
         x0, y0 = 30, 100
-        tube_width, tube_height = 1200, 450
+        tube_width, tube_height = 1400, 450
         zone_width = tube_width // 3
         # Рисуем трубу
         canvas.create_rectangle(x0, y0, x0 + tube_width, y0 + tube_height, width=3)
@@ -620,10 +620,10 @@ class FrameTechnologicalScheme(tk.LabelFrame):
 
     def control_status(self, label, status_word, pos_1, pos_2, pos_3, revers_time: int):
         if get_bit(status_word, pos_1):
-            label['text'] = 'Выдержка - ' + str(revers_time) + 'с'
+            label['text'] = 'Выдержка ' + str(revers_time) + 'с'
             label.config(bg="Yellow")
         elif get_bit(status_word, pos_2):
-            label['text'] = 'Испытание - ' + str(revers_time) + 'с'
+            label['text'] = 'Испытание ' + str(revers_time) + 'с'
             label.config(bg="Green")
         elif get_bit(status_word, pos_3):
             label['text'] = 'Завершено'
