@@ -50,7 +50,7 @@ class MultiCursor(_MultiCursor):
             i_x = len(self.x_data) - 1
         else:
             for index, t in enumerate(self.x_data):
-                if np.abs(t - x) < dt.timedelta(milliseconds=500):
+                if np.abs(t - x) < dt.timedelta(milliseconds=250):
                     i_x = index
                     break
             # i_x = self.x_data.index(x)
