@@ -17,6 +17,10 @@ def set_kth_bit(num, pos):
     return (1 << pos) | num
 
 
+def reset_kth_bit(num, pos):
+    return ~(1 << pos) & num
+
+
 def get_bit(num, pos):
     return (num >> pos) & 1
 
@@ -641,6 +645,24 @@ class FrameTechnologicalScheme(tk.LabelFrame):
             label.config(bg="White")
 
 
+def pusk_measurement_in_box():
+    # Считаем биты запуска измерения
+    status_word = c_plc.parameters.p['w_RegStatus_1'].value
+    if get_bit(status_word, 11):
+        saving_parameters_at_start(sample_num=1)
+        c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(status_word, 11)
+    if get_bit(status_word, 12):
+        saving_parameters_at_start(sample_num=2)
+        c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(status_word, 12)
+    if get_bit(status_word, 13):
+        saving_parameters_at_start(sample_num=3)
+        c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(status_word, 13)
+    # ПЛК передаем команду сбросить биты запуска
+    w_reg_control_1 = c_plc.parameters.p['w_RegControl_1'].value
+    c_plc.parameters.p['w_RegControl_1'].write_value = set_kth_bit(w_reg_control_1, 14)
+    c_plc.parameters.p['w_RegControl_1'].en_write = True
+
+
 def saving_parameters_at_start(sample_num: int):
     additional_information = {'w_sample_num': sample_num,
                               's_FamilyTester': frm_cur_pars.entry_family_tester_1.get()
@@ -749,6 +771,7 @@ def update():
     if skipp_update > 0:
         skipp_update -= 1
     else:
+        pusk_measurement_in_box()
         # Обновляем значение полей ввода вывода
         frm_cur_pars.update_values_of_entry()
         frm_cur_pars_unit_1.update_values_of_entry()
