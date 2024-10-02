@@ -39,8 +39,8 @@ class FrameShowCharts(tk.LabelFrame):
         self.canvas = FigureCanvasTkAgg(self.figure_1, self)
         self.canvas.get_tk_widget().place(x=-125, y=0, width=1800, height=1050)
 
-    def open_chart(self, file_name):
-        self.figure_1.suptitle(file_name)
+    def open_chart(self, file_name, title):
+        self.figure_1.suptitle(title)
         dates = []
         values_1 = []
         values_2 = []
@@ -48,7 +48,6 @@ class FrameShowCharts(tk.LabelFrame):
         values_4 = []
         values_5 = []
         values_power = []
-
 
         with open(file_name, newline='') as f:
             for row in csv.reader(f, delimiter=';', quotechar='"'):

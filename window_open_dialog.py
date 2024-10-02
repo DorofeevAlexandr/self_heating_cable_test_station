@@ -89,7 +89,7 @@ class FrameOpenFile(tk.LabelFrame):
                 self.sample = {}
                 csv_reader.copy_file(path, file_name)
                 csv_reader.open_file(file_name)
-                self.frm_chart.open_chart(file_name)
+                self.frm_chart.open_chart(file_name, title=file_name)
         return file_name
 
     def open_sub_folder(self, event):
@@ -148,7 +148,7 @@ class FrameOpenFile(tk.LabelFrame):
     def open_arhives(self, path):
         self.sample = {}
         if os.path.splitext(path)[1] == '.csv':
-            self.frm_chart.open_chart(path)
+            self.frm_chart.open_chart(path, title=path)
         elif os.path.splitext(path)[1] == '.json':
             self.sample = open_additional_information(path)
             try:
@@ -165,7 +165,8 @@ class FrameOpenFile(tk.LabelFrame):
                                          file_name=file_name,
                                          pc_path=pc_path)
                     csv_reader.open_file(os.path.join(pc_path, file_name))
-                    self.frm_chart.open_chart(os.path.join(pc_path, file_name))
+                    self.frm_chart.open_chart(os.path.join(pc_path, file_name),
+                                              title=path)
             except Exception as e:
                 print(e)
 
