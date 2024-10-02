@@ -790,6 +790,12 @@ def write_value(entry, key):
     skipp_update = 0
 
 
+def load_params():
+    file_name = 'params.json'
+    with open(file_name, 'r') as json_file:
+        data = json.load(json_file)
+        print(data)
+
 def save_params():
     data = {
         's_FamilyTester': frm_cur_pars.entry_family_tester_1.get(),
@@ -828,7 +834,8 @@ def write_parametr(key, value):
 
 update()
 window.after(3000, update)
-
+if 'normal' == window.state():
+    load_params()
 window.protocol("WM_DELETE_WINDOW", on_closing)
 # Запуск приложения.
 window.mainloop()
