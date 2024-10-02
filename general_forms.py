@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.messagebox as mb
 import window_open_dialog
+import window_alarms_list
 import control_plc as c_plc
 from tkinter import ttk
 import datetime as dt
@@ -30,6 +31,8 @@ class MainMenu(tk.Frame):
         # self.file_menu.add_command(label="Открыть...")
         # self.file_menu.add_command(label="Новый")
         file_menu.add_command(label="Настроить время в ПЛК", command=self.open_window_tuning_time_in_plc)
+        file_menu.add_separator()
+        file_menu.add_command(label="Список аварий", command=self.open_alarms_list)
         # file_menu.add_separator()
         # file_menu.add_command(label="Выход", command=self.exit_program)
         menubar.add_cascade(label="Файл", menu=file_menu)
@@ -38,6 +41,11 @@ class MainMenu(tk.Frame):
     def open_window_tuning_time_in_plc():
         WindowTuningTimeInPLC(window)
         WindowTuningTimeInPLC.grab_set(window)
+
+    @staticmethod
+    def open_alarms_list():
+        window_alarms_list.WindowAlarmsList(window)
+        window_alarms_list.WindowAlarmsList.grab_set(window)
 
     @staticmethod
     def exit_program():
