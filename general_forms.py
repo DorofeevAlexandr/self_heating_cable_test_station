@@ -6,6 +6,7 @@ import control_plc as c_plc
 from tkinter import ttk
 import datetime as dt
 import os
+import json
 
 from additional_information_files import save_additional_information
 
@@ -789,11 +790,45 @@ def write_value(entry, key):
     skipp_update = 0
 
 
+def save_params():
+    data = {
+        's_FamilyTester': frm_cur_pars.entry_family_tester_1.get(),
+
+        's_KableBrandTest_1': frm_cur_pars_unit_1.entry_kable_brand_test_1.get(),
+        's_BatchNumberTest_1': frm_cur_pars_unit_1.entry_batch_number_test_1.get(),
+        'r_TempStartTest_1': frm_cur_pars_unit_1.entry_temp_start_test_1.get(),
+        'w_ExpTimeTest_1': frm_cur_pars_unit_1.entry_exp_time_test_1.get(),
+        'w_LenTimeTest_1': frm_cur_pars_unit_1.entry_len_time_test_1.get(),
+
+        's_KableBrandTest_2': frm_cur_pars_unit_2.entry_kable_brand_test_2.get(),
+        's_BatchNumberTest_2': frm_cur_pars_unit_2.entry_batch_number_test_2.get(),
+        'r_TempStartTest_2': frm_cur_pars_unit_2.entry_temp_start_test_2.get(),
+        'w_ExpTimeTest_2': frm_cur_pars_unit_2.entry_exp_time_test_2.get(),
+        'w_LenTimeTest_2': frm_cur_pars_unit_2.entry_len_time_test_2.get(),
+
+        's_KableBrandTest_3': frm_cur_pars_unit_3.entry_kable_brand_test_3.get(),
+        's_BatchNumberTest_3': frm_cur_pars_unit_3.entry_batch_number_test_3.get(),
+        'r_TempStartTest_3': frm_cur_pars_unit_3.entry_temp_start_test_3.get(),
+        'w_ExpTimeTest_3': frm_cur_pars_unit_3.entry_exp_time_test_3.get(),
+        'w_LenTimeTest_3': frm_cur_pars_unit_3.entry_len_time_test_3.get(),
+    }
+    file_name = 'params.json'
+    with open(file_name, 'w', encoding="utf-8") as outfile:
+        json.dump(data, outfile)
+
+
+def on_closing():
+    save_params()
+    window.destroy()
+
+
 def write_parametr(key, value):
     c_plc.parameters.p[key].write_value = value
     c_plc.parameters.p[key].en_write = True
 
 update()
 window.after(3000, update)
+
+window.protocol("WM_DELETE_WINDOW", on_closing)
 # Запуск приложения.
 window.mainloop()
