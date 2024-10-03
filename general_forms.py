@@ -9,6 +9,8 @@ import os
 import json
 
 from additional_information_files import save_additional_information
+from config import PARAMS_FILENAME
+
 
 WIDTH_1 = 15
 WIDTH_2 = 25
@@ -791,10 +793,29 @@ def write_value(entry, key):
 
 
 def load_params():
-    file_name = 'params.json'
-    with open(file_name, 'r') as json_file:
-        data = json.load(json_file)
-        print(data)
+    if os.path.isfile(PARAMS_FILENAME):
+        with open(PARAMS_FILENAME, 'r') as json_file:
+            data = json.load(json_file)
+
+        frm_cur_pars.family_tester_1.set(data['s_FamilyTester'])
+        frm_cur_pars_unit_1.kable_brand_test_1.set(data['s_KableBrandTest_1'])
+        frm_cur_pars_unit_1.batch_number_test_1.set(data['s_BatchNumberTest_1'])
+        frm_cur_pars_unit_1.temp_start_test_1.set(data['r_TempStartTest_1'])
+        frm_cur_pars_unit_1.exp_time_test_1.set(data['w_ExpTimeTest_1'])
+        frm_cur_pars_unit_1.len_time_test_1.set(data['w_LenTimeTest_1'])
+
+        frm_cur_pars_unit_2.kable_brand_test_2.set(data['s_KableBrandTest_2'])
+        frm_cur_pars_unit_2.batch_number_test_2.set(data['s_BatchNumberTest_2'])
+        frm_cur_pars_unit_2.temp_start_test_2.set(data['r_TempStartTest_2'])
+        frm_cur_pars_unit_2.exp_time_test_2.set(data['w_ExpTimeTest_2'])
+        frm_cur_pars_unit_2.len_time_test_2.set(data['w_LenTimeTest_2'])
+
+        frm_cur_pars_unit_3.kable_brand_test_3.set(data['s_KableBrandTest_3'])
+        frm_cur_pars_unit_3.batch_number_test_3.set(data['s_BatchNumberTest_3'])
+        frm_cur_pars_unit_3.temp_start_test_3.set(data['r_TempStartTest_3'])
+        frm_cur_pars_unit_3.exp_time_test_3.set(data['w_ExpTimeTest_3'])
+        frm_cur_pars_unit_3.len_time_test_3.set(data['w_LenTimeTest_3'])
+
 
 def save_params():
     data = {
@@ -818,8 +839,7 @@ def save_params():
         'w_ExpTimeTest_3': frm_cur_pars_unit_3.entry_exp_time_test_3.get(),
         'w_LenTimeTest_3': frm_cur_pars_unit_3.entry_len_time_test_3.get(),
     }
-    file_name = 'params.json'
-    with open(file_name, 'w', encoding="utf-8") as outfile:
+    with open(PARAMS_FILENAME, 'w', encoding="utf-8") as outfile:
         json.dump(data, outfile)
 
 
