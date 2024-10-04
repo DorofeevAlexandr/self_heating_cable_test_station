@@ -8,6 +8,8 @@ import hmi_parameters
 SERVER_HOST = IP_PLC
 SERVER_PORT = 502
 
+plc_in_network = False
+
 # set global
 regs = {key: 0 for key in range(100, 600)}
 parameters = hmi_parameters.Parameters()
@@ -23,7 +25,9 @@ def polling_thread():
     # polling loop
     while True:
         # keep TCP open
-        if not c.is_open():
+        plc_in_network = c.is_open()
+        if not plc_in_network:
+            print('plc_in_network', plc_in_network)
             c.open()
         # do modbus reading on socket
         reg_list_1 = c.read_holding_registers(100, 100)

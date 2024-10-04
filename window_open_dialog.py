@@ -7,6 +7,7 @@ import os
 from config import BASE_DIR
 
 from additional_information_files import open_additional_information
+from control_plc import plc_in_network
 
 
 class FrameOpenFile(tk.LabelFrame):
@@ -64,6 +65,9 @@ class FrameOpenFile(tk.LabelFrame):
             self.label['text'] = csv_reader.get_path()
 
     def open_sub_folder_plc(self):
+        if not plc_in_network:
+            self.init_select_download_source()
+            return None
         select = list(self.box.curselection())[0]
         if select == 0 and self.box.get(select) == '[**]' and self.label['text'] == '/sd0':
             self.init_select_download_source()
@@ -98,7 +102,7 @@ class FrameOpenFile(tk.LabelFrame):
             if self.box.get(select) == '[data_base]':
                 self.download_source = 'PC'
                 self.update_list_dir_in_box(f_name='data_base')
-            if self.box.get(select) == '[PLC]':
+            if self.box.get(select) == '[PLC]' and plc_in_network:
                 self.download_source = 'PLC'
                 self.label['text'] = ''
                 self.clear_box(self.box)
@@ -154,20 +158,18 @@ class FrameOpenFile(tk.LabelFrame):
             self.sample = open_additional_information(path)
             try:
                 file_name = self.sample['s_csv_file_name']
-                print(file_name)
                 pc_path = os.path.split(path)[0]
-                print(pc_path)
                 fn = file_name.split('_')
-                print(fn)
                 ftp_path = f'/sd0/{fn[1]}/{fn[2]}/'
-                print(ftp_path)
-                with CsvFileReader() as csv_reader:
-                    csv_reader.copy_file(ftp_path=ftp_path,
-                                         file_name=file_name,
-                                         pc_path=pc_path)
-                    csv_reader.open_file(os.path.join(pc_path, file_name))
-                    self.frm_chart.open_chart(os.path.join(pc_path, file_name),
-                                              title=path)
+                print('plc_in_network arh', plc_in_network)
+                if plc_in_network:
+                    with CsvFileReader() as csv_reader:
+                        csv_reader.copy_file(ftp_path=ftp_path,
+                                             file_name=file_name,
+                                             pc_path=pc_path)
+                        csv_reader.open_file(os.path.join(pc_path, file_name))
+                self.frm_chart.open_chart(os.path.join(pc_path, file_name),
+                                          title=path)
             except Exception as e:
                 print(e)
 
