@@ -18,7 +18,7 @@ class FrameOpenFile(tk.LabelFrame):
         self.label = tk.Label(self, text='Выбор источника загрузки')
         self.label.pack(side=tk.TOP, fill=tk.Y, anchor=tk.NW)
 
-        self.box = tk.Listbox(self, selectmode=tk.SINGLE, width=50, height=30)
+        self.box = tk.Listbox(self, selectmode=tk.SINGLE, width=60, height=30)
         self.box.pack(side=tk.LEFT, fill=tk.Y)
         self.box.insert(tk.END, '[**]')
         self.box.insert(tk.END, '[PLC]')
