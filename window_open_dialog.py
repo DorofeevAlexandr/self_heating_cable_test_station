@@ -116,7 +116,8 @@ class FrameOpenFile(tk.LabelFrame):
         self.clear_box(self.box)
         path = os.path.join(BASE_DIR, self.select_folder, f_name)
         folders = os.listdir(path)
-        sort_folders = sorted(folders, key=lambda folder: folder[9:])
+        sort_folders = sorted(folders, key= lambda  s: os.path.getmtime(os.path.join(path, s)))
+        #sort_folders = sorted(folders, key=lambda folder: folder[9:])
         for f in sort_folders:
             self.box.insert(tk.END, f)
         self.select_folder = os.path.relpath(path, start=BASE_DIR)
