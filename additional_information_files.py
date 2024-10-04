@@ -35,9 +35,10 @@ def create_dir(sample):
     dt = datetime.now()
     year = str(dt.year)
     month = str(dt.month)
+    day = str(dt.day)
     file_name = (f'Образец{str(sample["w_sample_num"])}_{st_time()}_'
                  f'{sample["s_KableBrandTest"]}_{sample["s_BatchNumberTest"]}.json')
-    path = os.path.join(BASE_DIR, 'data_base', year, month)
+    path = os.path.join(BASE_DIR, 'data_base', year, month, day)
     file_name = os.path.join(path, file_name)
     if not os.path.isdir(path):
         os.makedirs(path)   
