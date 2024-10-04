@@ -653,17 +653,18 @@ def pusk_measurement_in_box():
     status_word = c_plc.parameters.p['w_RegStatus_1'].value
     if get_bit(status_word, 11):
         saving_parameters_at_start(sample_num=1)
-        c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(status_word, 11)
+        c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(c_plc.parameters.p['w_RegStatus_1'].value, 11)
     if get_bit(status_word, 12):
         saving_parameters_at_start(sample_num=2)
-        c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(status_word, 12)
+        c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(c_plc.parameters.p['w_RegStatus_1'].value, 12)
     if get_bit(status_word, 13):
         saving_parameters_at_start(sample_num=3)
-        c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(status_word, 13)
+        c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(c_plc.parameters.p['w_RegStatus_1'].value, 13)
     # ПЛК передаем команду сбросить биты запуска
-    w_reg_control_1 = c_plc.parameters.p['w_RegControl_1'].value
-    c_plc.parameters.p['w_RegControl_1'].write_value = set_kth_bit(w_reg_control_1, 14)
-    c_plc.parameters.p['w_RegControl_1'].en_write = True
+    if get_bit(status_word, 11) or get_bit(status_word, 12) or get_bit(status_word, 13):
+        w_reg_control_1 = c_plc.parameters.p['w_RegControl_1'].value
+        c_plc.parameters.p['w_RegControl_1'].write_value = set_kth_bit(w_reg_control_1, 14)
+        c_plc.parameters.p['w_RegControl_1'].en_write = True
 
 
 def saving_parameters_at_start(sample_num: int):
