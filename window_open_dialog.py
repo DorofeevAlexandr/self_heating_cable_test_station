@@ -116,6 +116,14 @@ class FrameOpenFile(tk.LabelFrame):
         self.clear_box(self.box)
         path = os.path.join(BASE_DIR, self.select_folder, f_name)
         folders = os.listdir(path)
+        
+        have_json = False
+        for folder in folders:
+            if os.path.splitext(folder)[1] == '.json':
+                have_json = True
+        if have_json:
+           folders = filter(is_file_csv, folders) 
+           
         sort_folders = sorted(folders, key= lambda  s: os.path.getmtime(os.path.join(path, s)))
         #sort_folders = sorted(folders, key=lambda folder: folder[9:])
         for f in sort_folders:
@@ -173,6 +181,11 @@ class FrameOpenFile(tk.LabelFrame):
                                           title=path)
             except Exception as e:
                 print(e)
+
+
+def is_file_csv(path):
+    return os.path.splitext(path)[1] != '.csv'
+
 
 
 if __name__ == '__main__':
