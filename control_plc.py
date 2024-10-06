@@ -5,12 +5,13 @@ from pyModbusTCP.client import ModbusClient
 from config import IP_PLC
 import hmi_parameters
 
+
 SERVER_HOST = IP_PLC
 SERVER_PORT = 502
 
-plc_in_network = False
-
 # set global
+plc_in_network = True
+_plc_in_network = True
 regs = {key: 0 for key in range(100, 600)}
 parameters = hmi_parameters.Parameters()
 
@@ -21,13 +22,13 @@ regs_lock = Lock()
 # modbus polling thread
 def polling_thread():
     global regs
+    global _plc_in_network
     c = ModbusClient(host=SERVER_HOST, port=SERVER_PORT)
     # polling loop
     while True:
         # keep TCP open
-        plc_in_network = c.is_open()
-        if not plc_in_network:
-            print('plc_in_network', plc_in_network)
+        in_network = c.is_open()
+        if not c.is_open():
             c.open()
         # do modbus reading on socket
         reg_list_1 = c.read_holding_registers(100, 100)
@@ -39,6 +40,8 @@ def polling_thread():
         # if read is ok, store result in regs (with thread lock synchronization)
         if reg_list_1 and reg_list_2 and reg_list_3 and reg_list_4 and reg_list_5:
             with regs_lock:
+
+                _plc_in_network = in_network
                 for i in range(0, 100):
                     regs[100 + i] = reg_list_1[i]
                 for i in range(0, 100):
@@ -71,6 +74,7 @@ def update_parameters():
     # print('=====================================================================')
     with regs_lock:
         # print(regs)
+        plc_in_network = _plc_in_network
         parameters.read_values(regs)
         parameters.write_values()
 
