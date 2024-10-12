@@ -7,8 +7,9 @@ import os
 from config import BASE_DIR
 
 from additional_information_files import open_additional_information
-from control_plc import plc_in_network
 
+
+plc_in_network = True
 
 class FrameOpenFile(tk.LabelFrame):
     def __init__(self, parent=None):
