@@ -16,7 +16,7 @@ class FrameOpenFile(tk.LabelFrame):
         tk.LabelFrame.__init__(self, parent)
         self.pack(fill=tk.BOTH)
 
-        self.label = tk.Label(self, text='Выбор источника загрузки')
+        self.label = tk.Label(self, text='Выбор источника загрузки', height=2)
         self.label.pack(side=tk.TOP, fill=tk.Y, anchor=tk.NW)
 
         self.box = tk.Listbox(self, selectmode=tk.SINGLE, width=60, height=30)
@@ -30,15 +30,20 @@ class FrameOpenFile(tk.LabelFrame):
         self.box.config(yscrollcommand=self.scroll.set)
         # self.open_folder()
 
-        self.button_create_report = tk.Button(self, text="Сформировать отчет", command=lambda: self.create_report())
-        # self.button_create_report.config(font=("Times", "12", "bold"))
-        # self.button_create_report.place(x=10, y=20)
-        self.button_create_report.pack(side=tk.TOP, fill=tk.X)
 
         self.frm_chart = charts.FrameShowCharts(self)
         self.frm_chart['text'] = 'График'
         self.frm_chart.pack(side=tk.LEFT, anchor=tk.SE, fill=tk.BOTH)
         # self.frm_chart.open_chart('Sample1_2021_11_16__16_16_51_kab_nomer.csv')
+
+        self.button_create_report = tk.Button(self, text="Сформировать отчет", command=lambda: self.create_report(), height=1)
+        self.button_create_report.place(x=380, y=5)
+
+        self.button_start_chart = tk.Button(self, text="График при пуске", command=lambda: self.show_start_chart(), height=1)
+        self.button_start_chart.place(x=515, y=5)
+
+        self.button_full_chart = tk.Button(self, text="Полный график", command=lambda: self.show_full_chart(), height=1)
+        self.button_full_chart.place(x=630, y=5)
 
         self.download_source = ''
         self.select_folder = ''
@@ -55,6 +60,12 @@ class FrameOpenFile(tk.LabelFrame):
         create_report_word(self.frm_chart.figure_1,
                            data=self.sample,
                            report_filename=filename)
+        
+    def show_start_chart(self):
+        pass    
+
+    def show_full_chart(self):
+        pass      
 
     def open_folder(self, path='/sd0/'):
         for i in range(1, self.box.size()):
