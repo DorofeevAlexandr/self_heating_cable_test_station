@@ -32,7 +32,7 @@ class FrameOpenFile(tk.LabelFrame):
 
 
         self.frm_chart = charts.FrameShowCharts(self)
-        self.frm_chart['text'] = 'График'
+        # self.frm_chart['text'] = 'График'
         self.frm_chart.pack(side=tk.LEFT, anchor=tk.SE, fill=tk.BOTH)
         # self.frm_chart.open_chart('Sample1_2021_11_16__16_16_51_kab_nomer.csv')
 
@@ -62,10 +62,12 @@ class FrameOpenFile(tk.LabelFrame):
                            report_filename=filename)
         
     def show_start_chart(self):
-        pass    
+        self.frm_chart.clear_axies()    
+        self.frm_chart.update_figure(full_chart=False)
 
     def show_full_chart(self):
-        pass      
+        self.frm_chart.clear_axies()      
+        self.frm_chart.update_figure(full_chart=True)
 
     def open_folder(self, path='/sd0/'):
         for i in range(1, self.box.size()):
