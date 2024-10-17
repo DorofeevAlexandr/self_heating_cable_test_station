@@ -50,16 +50,12 @@ class MultiCursor(_MultiCursor):
             i_x = len(self.x_data) - 1
         else:
             for index, t in enumerate(self.x_data):
-                if np.abs(t - x) < dt.timedelta(milliseconds=250):
+                if t > x:
                     i_x = index
                     break
-            # i_x = self.x_data.index(x)
-            # i_x = np.abs(self.x_data - x).argmin()
         data_x = self.x_data[i_x]
         if data_x == self.current_data_x:
             msg = self.toolbar_message
-            # if msg is not None:
-            #     self.canvas.toolbar.set_message(msg)
             return
 
         x_str = str(data_x.time())
