@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import datetime as dt
 import csv
+import os
 
 import multi_cursor
 
@@ -51,7 +52,7 @@ class FrameShowCharts(tk.LabelFrame):
 
     def open_chart(self, file_name, title):
         self.clear_chart()
-        self.figure_1.suptitle(title)
+        self.figure_1.suptitle(os.path.split(title)[1])
         with open(file_name, newline='') as f:
             for row in csv.reader(f, delimiter=';', quotechar='"'):
                 # print(row)
