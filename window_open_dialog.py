@@ -92,6 +92,7 @@ class FrameOpenFile(tk.LabelFrame):
                 self.label['text'] = csv_reader.get_path()
             else:
                 self.sample = {}
+                self.frm_chart.clear_chart()
                 csv_reader.copy_file(path, file_name)
                 csv_reader.open_file(file_name)
                 self.frm_chart.open_chart(file_name, title=file_name)
@@ -162,6 +163,7 @@ class FrameOpenFile(tk.LabelFrame):
 
     def open_arhives(self, path):
         self.sample = {}
+        self.frm_chart.clear_chart()
         if os.path.splitext(path)[1] == '.csv':
             self.frm_chart.open_chart(path, title=path)
         elif os.path.splitext(path)[1] == '.json':
@@ -186,7 +188,6 @@ class FrameOpenFile(tk.LabelFrame):
 
 def is_file_csv(path):
     return os.path.splitext(path)[1] != '.csv'
-
 
 
 if __name__ == '__main__':
