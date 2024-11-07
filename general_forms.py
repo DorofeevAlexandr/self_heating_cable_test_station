@@ -582,20 +582,31 @@ class FrameTechnologicalScheme(tk.LabelFrame):
         self.button_stop_test_3.config(font=("Times", "20", "bold"), bg="Red")
         self.button_stop_test_3.place(x=x0_zone1+zone_width//3+2*zone_width, y=y0_zone1+380)
 
+        self.last_time_pusk_measurment_1 = dt.datetime.now()
+        self.last_time_pusk_measurment_2 = dt.datetime.now()
+        self.last_time_pusk_measurment_3 = dt.datetime.now()
+
+    def delayed_reactivation(self, last_time_pusk:dt.datetime):
+        delta = (dt.datetime.now() - last_time_pusk)
+        return delta.seconds > 10
+
     def pusk_measurement(self, zone_num: int, no_askyesno=False):
         status_word_2 = c_plc.parameters.p['w_RegStatus_2'].value
         en_pusk_zone_1 = get_bit(status_word_2, 1)
         en_pusk_zone_2 = get_bit(status_word_2, 2)
         en_pusk_zone_3 = get_bit(status_word_2, 3)
-        if zone_num==1 and en_pusk_zone_1:
+        if zone_num==1 and en_pusk_zone_1 and self.delayed_reactivation(self.last_time_pusk_measurment_1):
             if self.set_bit_control_word(4, no_askyesno):
                 saving_parameters_at_start(sample_num=zone_num)
-        elif zone_num==2 and en_pusk_zone_2:
+                self.last_time_pusk_measurment_1 = dt.datetime.now()
+        elif zone_num==2 and en_pusk_zone_2 and self.delayed_reactivation(self.last_time_pusk_measurment_2):
             if self.set_bit_control_word(7, no_askyesno):
                 saving_parameters_at_start(sample_num=zone_num)
-        elif zone_num==3 and en_pusk_zone_3:
+                self.last_time_pusk_measurment_2 = dt.datetime.now()
+        elif zone_num==3 and en_pusk_zone_3 and self.delayed_reactivation(self.last_time_pusk_measurment_3):
             if self.set_bit_control_word(10, no_askyesno):
-                saving_parameters_at_start(sample_num=zone_num)                
+                saving_parameters_at_start(sample_num=zone_num)       
+                self.last_time_pusk_measurment_3 = dt.datetime.now()         
 
     def set_bit_control_word(self, pos, no_askyesno=False):
         message = "Подтвердите операцию"
