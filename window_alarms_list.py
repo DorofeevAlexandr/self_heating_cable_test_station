@@ -20,7 +20,7 @@ class WindowAlarmsList(tk.Toplevel):
         self.scroll = tk.Scrollbar(self, command=self.box.yview)
         self.scroll.pack(side=tk.LEFT, fill=tk.Y)
         self.box.config(yscrollcommand=self.scroll.set)
-        self.update_list_alarms_in_box()
+        self.clk_timer()
 
     def update_list_alarms_in_box(self):
         self.clear_box(self.box)
@@ -75,6 +75,10 @@ class WindowAlarmsList(tk.Toplevel):
     def clear_box(self, box):
         for _ in range(0, self.box.size()):
             box.delete(0)
+
+    def clk_timer(self):
+        self.update_list_alarms_in_box()
+        self.after(2500, self.clk_timer)        
 
 
 if __name__ == '__main__':
