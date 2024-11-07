@@ -15,6 +15,7 @@ from config import PARAMS_FILENAME
 WIDTH_1 = 15
 WIDTH_2 = 25
 
+offline_mode = False
 
 def set_kth_bit(num, pos):
     return (1 << pos) | num
@@ -37,6 +38,8 @@ class MainMenu(tk.Frame):
         file_menu = tk.Menu(menubar, tearoff=0)
         # self.file_menu.add_command(label="Открыть...")
         # self.file_menu.add_command(label="Новый")
+        file_menu.add_command(label="Включить автономный режим", command=lambda: self.select_offline_mode(file_menu))
+        file_menu.add_separator()
         file_menu.add_command(label="Настроить время в ПЛК", command=self.open_window_tuning_time_in_plc)
         file_menu.add_separator()
         file_menu.add_command(label="Список аварий", command=self.open_alarms_list)
@@ -44,6 +47,16 @@ class MainMenu(tk.Frame):
         # file_menu.add_command(label="Выход", command=self.exit_program)
         menubar.add_cascade(label="Файл", menu=file_menu)
 
+    def select_offline_mode(self, menu_point):  # Обработчик Пункта-Меню
+        global offline_mode
+
+        if offline_mode:
+            offline_mode = False
+            menu_point.entryconfigure(0, label="Включить автономный режим") 
+        else:
+            offline_mode = True
+            menu_point.entryconfigure(0, label="Выключить автономный режим")  
+    
     @staticmethod
     def open_window_tuning_time_in_plc():
         WindowTuningTimeInPLC(window)
@@ -784,6 +797,7 @@ def set_skipp_update():
 
 def update():
     c_plc.update_parameters()
+    window_open_dialog.plc_in_network = not offline_mode
 
     global skipp_update
     if skipp_update > 0:
