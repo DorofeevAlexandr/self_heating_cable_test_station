@@ -515,7 +515,7 @@ class FrameTechnologicalScheme(tk.LabelFrame):
         self.label_status_test_1.config(font=("Times", "40", "bold"), bg="White")
         self.label_status_test_1.place(x=x0_zone1, y=y0_zone1+300)
 
-        self.button_start_test_1 = tk.Button(self, text="Пуск", command=lambda: self.pusk_measurement(1, 4))
+        self.button_start_test_1 = tk.Button(self, text="Пуск", command=lambda: self.pusk_measurement(zone_num=1))
         self.button_start_test_1.config(font=("Times", "20", "bold"), bg="Green")
         self.button_start_test_1.place(x=x0_zone1, y=y0_zone1 + 380)
         self.button_stop_test_1 = tk.Button(self, text="Стоп", command=lambda: self.set_bit_control_word(5))
@@ -545,7 +545,7 @@ class FrameTechnologicalScheme(tk.LabelFrame):
         self.label_status_test_2.config(font=("Times", "40", "bold"), bg="White")
         self.label_status_test_2.place(x=x0_zone1+zone_width, y=y0_zone1 + 300)
 
-        self.button_start_test_2 = tk.Button(self, text="Пуск", command=lambda: self.pusk_measurement(2, 7))
+        self.button_start_test_2 = tk.Button(self, text="Пуск", command=lambda: self.pusk_measurement(zone_num=2))
         self.button_start_test_2.config(font=("Times", "20", "bold"), bg="Green")
         self.button_start_test_2.place(x=x0_zone1+zone_width, y=y0_zone1 + 380)
         self.button_stop_test_2 = tk.Button(self, text="Стоп", command=lambda: self.set_bit_control_word(8))
@@ -575,20 +575,31 @@ class FrameTechnologicalScheme(tk.LabelFrame):
         self.label_status_test_3.config(font=("Times", "40", "bold"), bg="White")
         self.label_status_test_3.place(x=x0_zone1+2*zone_width, y=y0_zone1 + 300)
 
-        self.button_start_test_3 = tk.Button(self, text="Пуск", command=lambda: self.pusk_measurement(3, 10))
+        self.button_start_test_3 = tk.Button(self, text="Пуск", command=lambda: self.pusk_measurement(zone_num=3))
         self.button_start_test_3.config(font=("Times", "20", "bold"), bg="Green")
         self.button_start_test_3.place(x=x0_zone1+2*zone_width, y=y0_zone1 + 380)
         self.button_stop_test_3 = tk.Button(self, text="Стоп", command=lambda: self.set_bit_control_word(11))
         self.button_stop_test_3.config(font=("Times", "20", "bold"), bg="Red")
         self.button_stop_test_3.place(x=x0_zone1+zone_width//3+2*zone_width, y=y0_zone1+380)
 
-    def pusk_measurement(self, zone_num: int, bit_num: int):
-        if self.set_bit_control_word(bit_num):
-            saving_parameters_at_start(sample_num=zone_num)
+    def pusk_measurement(self, zone_num: int, no_askyesno=False):
+        status_word_2 = c_plc.parameters.p['w_RegStatus_2'].value
+        en_pusk_zone_1 = get_bit(status_word_2, 1)
+        en_pusk_zone_2 = get_bit(status_word_2, 2)
+        en_pusk_zone_3 = get_bit(status_word_2, 3)
+        if zone_num==1 and en_pusk_zone_1:
+            if self.set_bit_control_word(4, no_askyesno):
+                saving_parameters_at_start(sample_num=zone_num)
+        elif zone_num==2 and en_pusk_zone_2:
+            if self.set_bit_control_word(7, no_askyesno):
+                saving_parameters_at_start(sample_num=zone_num)
+        elif zone_num==3 and en_pusk_zone_3:
+            if self.set_bit_control_word(10, no_askyesno):
+                saving_parameters_at_start(sample_num=zone_num)                
 
-    def set_bit_control_word(self, pos):
+    def set_bit_control_word(self, pos, no_askyesno=False):
         message = "Подтвердите операцию"
-        if mb.askyesno(message=message, parent=self):
+        if no_askyesno or mb.askyesno(message=message, parent=self):
             w_reg_control_1 = c_plc.parameters.p['w_RegControl_1'].value
             c_plc.parameters.p['w_RegControl_1'].write_value = set_kth_bit(w_reg_control_1, pos)
             c_plc.parameters.p['w_RegControl_1'].en_write = True
@@ -626,13 +637,6 @@ class FrameTechnologicalScheme(tk.LabelFrame):
         self.control_status(self.label_status_test_3, c_plc.parameters.p['w_RegStatus_1'].value, 6, 7, 8,
                             revers_time=c_plc.parameters.p['w_revers_time_3'].value)
 
-        '''st_start = str(c_plc.parameters.p['s_TimeStartTest_3'].value)[8, -1]
-        try:
-            t_start = dt.datetime.strptime("{}".format(st_start), '%H:%M:%S')
-        except TypeError:
-            t_start = 0
-        '''
-
     def control_status(self, label, status_word, pos_1, pos_2, pos_3, revers_time: int):
         if get_bit(status_word, pos_1):
             label['text'] = 'Выдержка ' + str(revers_time) + 'с'
@@ -647,24 +651,23 @@ class FrameTechnologicalScheme(tk.LabelFrame):
             label['text'] = ''
             label.config(bg="White")
 
-
-def pusk_measurement_in_box():
-    # Считаем биты запуска измерения
-    status_word = c_plc.parameters.p['w_RegStatus_1'].value
-    if get_bit(status_word, 11):
-        saving_parameters_at_start(sample_num=1)
-        c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(c_plc.parameters.p['w_RegStatus_1'].value, 11)
-    if get_bit(status_word, 12):
-        saving_parameters_at_start(sample_num=2)
-        c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(c_plc.parameters.p['w_RegStatus_1'].value, 12)
-    if get_bit(status_word, 13):
-        saving_parameters_at_start(sample_num=3)
-        c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(c_plc.parameters.p['w_RegStatus_1'].value, 13)
-    # ПЛК передаем команду сбросить биты запуска
-    if get_bit(status_word, 11) or get_bit(status_word, 12) or get_bit(status_word, 13):
-        w_reg_control_1 = c_plc.parameters.p['w_RegControl_1'].value
-        c_plc.parameters.p['w_RegControl_1'].write_value = set_kth_bit(w_reg_control_1, 14)
-        c_plc.parameters.p['w_RegControl_1'].en_write = True
+    def pusk_measurement_in_box(self):
+        # Считаем биты запуска измерения
+        status_word = c_plc.parameters.p['w_RegStatus_1'].value
+        if get_bit(status_word, 11):
+            self.pusk_measurement(zone_num=1, no_askyesno=True)
+            c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(c_plc.parameters.p['w_RegStatus_1'].value, 11)
+        if get_bit(status_word, 12):
+            self.pusk_measurement(zone_num=2, no_askyesno=True)
+            c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(c_plc.parameters.p['w_RegStatus_1'].value, 12)
+        if get_bit(status_word, 13):
+            self.pusk_measurement(zone_num=3, no_askyesno=True)
+            c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(c_plc.parameters.p['w_RegStatus_1'].value, 13)
+        # ПЛК передаем команду сбросить биты запуска
+        if get_bit(status_word, 11) or get_bit(status_word, 12) or get_bit(status_word, 13):
+            w_reg_control_1 = c_plc.parameters.p['w_RegControl_1'].value
+            c_plc.parameters.p['w_RegControl_1'].write_value = set_kth_bit(w_reg_control_1, 14)
+            c_plc.parameters.p['w_RegControl_1'].en_write = True
 
 
 def saving_parameters_at_start(sample_num: int):
@@ -775,7 +778,7 @@ def update():
     if skipp_update > 0:
         skipp_update -= 1
     else:
-        pusk_measurement_in_box()
+        frm_technolgical_scheme.pusk_measurement_in_box()
         # Обновляем значение полей ввода вывода
         frm_cur_pars.update_values_of_entry()
         frm_cur_pars_unit_1.update_values_of_entry()
