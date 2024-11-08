@@ -45,8 +45,8 @@ def create_report_word(figure: plt.figure,
     figure.savefig(image, format="jpg", bbox_inches=extent.expanded(0.85, 0.85))
 
     pic = doc.add_picture(image,
-                          width=docx.shared.Cm(18),
-                          height=docx.shared.Cm(15)
+                          width=docx.shared.Cm(25),
+                          height=docx.shared.Cm(17)
                           )
     #pic.alignment = WD_ALIGN_PARAGRAPH.CENTER
     #pic.left_indent = docx.shared.Cm(105)
