@@ -99,9 +99,9 @@ class MultiCursor(_MultiCursor):
         self.axes[2].set_title(s_u + s_time)
         self.axes[3].set_title(s_power + s_time)
 
-        self.axes[0].set_ylim(0, max(self.y_data[0]) * 1.05)
+        self.axes[0].set_ylim(0, max(self.y_data[0]) * 1.1)
         self.axes[1].set_ylim(min(min(self.y_data[1][0]), min(self.y_data[1][1]), min(self.y_data[1][2])),
-                              max(max(self.y_data[1][0]), max(self.y_data[1][1]), max(self.y_data[1][2])) * 1.05)
+                              max(max(self.y_data[1][0]), max(self.y_data[1][1]), max(self.y_data[1][2])) * 1.1)
         self.axes[2].set_ylim(0, 250)
 
 
