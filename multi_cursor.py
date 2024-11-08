@@ -92,9 +92,8 @@ class MultiCursor(_MultiCursor):
                    labels[4][0] + ' = ' + labels[4][1]
         s_u = labels[5][0] + ' = ' + labels[5][1]
         s_power = labels[6][0] + ' = ' + labels[6][1]
-        s_current_pusk = ',      I_pusk = ' + str('%.3f' % max(self.y_data[0]))
 
-        self.axes[0].set_title(s_current + s_time + s_current_pusk)
+        self.axes[0].set_title(s_current + s_time)
         self.axes[1].set_title(s_temper + s_time)
         self.axes[2].set_title(s_u + s_time)
         self.axes[3].set_title(s_power + s_time)
