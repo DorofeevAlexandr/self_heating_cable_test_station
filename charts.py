@@ -32,6 +32,20 @@ class FrameShowCharts(tk.LabelFrame):
         self.values_5 = []
         self.values_power = []
 
+        self.i_pusk = 0
+        self.i_rab = 0
+        self.p_rab = 0
+        self.t_nagr = 0
+
+    def find_kable_params(self):
+        self.i_pusk = max(self.values_1)
+        if len(self.values_1) > 75:
+            self.i_rab = self.values_1[-70]
+        if len(self.values_power) > 75:
+            self.p_rab = self.values_power[-70]
+        if len(self.values_2) > 75:
+            self.t_nagr = self.values_2[-70]
+            
     def clear_chart(self):
         self.figure_1.suptitle('')
         self.dates.clear()
@@ -41,6 +55,10 @@ class FrameShowCharts(tk.LabelFrame):
         self.values_4.clear()
         self.values_5.clear()
         self.values_power.clear()
+        self.i_pusk = 0
+        self.i_rab = 0
+        self.p_rab = 0
+        self.t_nagr = 0
         self.clear_axies()
 
     def clear_axies(self):
@@ -52,7 +70,6 @@ class FrameShowCharts(tk.LabelFrame):
 
     def open_chart(self, file_name, title):
         self.clear_chart()
-        self.figure_1.suptitle(os.path.split(title)[1])
         with open(file_name, newline='') as f:
             for row in csv.reader(f, delimiter=';', quotechar='"'):
                 # print(row)
@@ -66,6 +83,10 @@ class FrameShowCharts(tk.LabelFrame):
                     self.values_power.append(float(row[1]) * float(row[5]))
                 except ValueError:
                     print('Прочитано некоректное значение', )
+        self.find_kable_params()
+        st_kable_params = f"  I_пуск={str('%.3f' % self.i_pusk)}A I_раб={str('%.3f' % self.i_rab)}A P_раб={str('%.1f' % self.p_rab)}Вт Т_обр={str('%.1f' % self.t_nagr)}°C"
+        #print(st_kable_params)
+        self.figure_1.suptitle(os.path.split(title)[1] + st_kable_params)
         self.update_figure()    
 
     def update_figure(self, full_chart=True):
