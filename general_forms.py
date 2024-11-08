@@ -689,9 +689,9 @@ class FrameTechnologicalScheme(tk.LabelFrame):
             c_plc.parameters.p['w_RegStatus_1'].write_value = reset_kth_bit(c_plc.parameters.p['w_RegStatus_1'].value, 13)
         # ПЛК передаем команду сбросить биты запуска
         if get_bit(status_word, 11) or get_bit(status_word, 12) or get_bit(status_word, 13):
-            w_reg_control_1 = c_plc.parameters.p['w_RegControl_1'].value
-            c_plc.parameters.p['w_RegControl_1'].write_value = set_kth_bit(w_reg_control_1, 14)
-            c_plc.parameters.p['w_RegControl_1'].en_write = True
+            w_reg_control_2 = c_plc.parameters.p['w_RegControl_2'].value
+            c_plc.parameters.p['w_RegControl_2'].write_value = set_kth_bit(w_reg_control_2, 14)
+            c_plc.parameters.p['w_RegControl_2'].en_write = True
 
 
 def saving_parameters_at_start(sample_num: int):
