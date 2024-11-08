@@ -59,7 +59,12 @@ class FrameOpenFile(tk.LabelFrame):
         print(filename)
         create_report_word(self.frm_chart.figure_1,
                            data=self.sample,
-                           report_filename=filename)
+                           report_filename=filename,
+                           i_pusk= self.frm_chart.i_pusk,
+                           i_rab= self.frm_chart.i_rab,
+                           p_rab= self.frm_chart.p_rab,
+                           t_nagr= self.frm_chart.t_nagr
+                           )
         
     def show_start_chart(self):
         self.frm_chart.clear_axies()    

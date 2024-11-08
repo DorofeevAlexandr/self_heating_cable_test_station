@@ -11,8 +11,12 @@ from config import COMPANY_NAME
 
 def create_report_word(figure: plt.figure,
                        data: dict,
+                       i_pusk: int,
+                       i_rab: int,
+                       p_rab: int,
+                       t_nagr: int,
                        report_filename: str ='report',
-                       company_name: str = COMPANY_NAME,
+                       company_name: str = COMPANY_NAME
                        ):
     doc = docx.Document()
 
@@ -37,6 +41,11 @@ def create_report_word(figure: plt.figure,
     par1.add_run(f'\nНаименование - {data.get("s_KableBrandTest", "_")}')
     par1.add_run(f'\n№ партии - {data.get("s_BatchNumberTest", "_")}')
 
+    par1.add_run(f"\nПусковой ток - {str('%.3f' % i_pusk)} A ")
+    par1.add_run(f"\nРабочий ток - {str('%.3f' % i_rab)} A")
+    par1.add_run(f"\nМощность кабеля - {str('%.1f' % p_rab)} Вт")
+    par1.add_run(f"\nТемп. нагрева кабеля - {str('%.1f' % t_nagr)} °C")
+
     par1.paragraph_format.space_before = Mm(1)
     par1.paragraph_format.space_after = Mm(1)
 
@@ -46,7 +55,7 @@ def create_report_word(figure: plt.figure,
 
     pic = doc.add_picture(image,
                           width=docx.shared.Cm(25),
-                          height=docx.shared.Cm(17)
+                          height=docx.shared.Cm(14)
                           )
     #pic.alignment = WD_ALIGN_PARAGRAPH.CENTER
     #pic.left_indent = docx.shared.Cm(105)
